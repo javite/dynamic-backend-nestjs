@@ -17,4 +17,8 @@ export class InfoUserDto {
     passExpirationDate: Date;
     @IsNotEmpty()
     active: boolean;
+    erased: boolean;
+    deletedAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }

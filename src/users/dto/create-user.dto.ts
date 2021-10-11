@@ -14,7 +14,7 @@ export class CreateUserDto {
     @IsNotEmpty()
     groupLevel: number;
     @IsNotEmpty()
-    deleted: boolean;
+    erased: boolean;
     @IsNotEmpty()
     active: boolean;
     @IsNotEmpty()

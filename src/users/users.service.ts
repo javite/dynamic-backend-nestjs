@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DeleteResult } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,7 +24,7 @@ export class UsersService {
     const _user: User = await this.usersRepository.create({ user, password, firstName, lastName, level, groupLevel });
     await this.usersRepository.save(_user);
     return this.toUserDto(_user);  
-}
+  }
 
   async findAll(): Promise<InfoUserDto[]> {
     let usersDTO: InfoUserDto[] = [];
@@ -39,7 +39,7 @@ export class UsersService {
   async findOne(id: number): Promise<InfoUserDto> {
     const _user = await this.usersRepository.findOne(id);
     if (!_user) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);    
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
     return this.toUserDto(_user);
   }
@@ -47,7 +47,7 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     const _user = await this.usersRepository.findOne(id);
     if (!_user) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);    
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
     _user.firstName = updateUserDto.firstName;
     _user.lastName = updateUserDto.lastName;
@@ -62,14 +62,20 @@ export class UsersService {
 
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): Promise<DeleteResult> {
+    const _user = await this.usersRepository.findOne(id);
+    if (!_user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
+    }
+    _user.erased = true;
+    await this.usersRepository.update(id, _user);
+    return this.usersRepository.softDelete(id);
   }
 
   async findByLogin({ user, password }: LoginUserDto): Promise<InfoUserDto> {    
     const _user = await this.usersRepository.findOne({ where: { user } });
     if (!_user) {
-        throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);    
+        throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
     const areEqual = await this.comparePasswords(_user.password, password);     // compare passwords    
     if (!areEqual) {
@@ -83,8 +89,9 @@ export class UsersService {
   }
 
   toUserDto(_user: User): InfoUserDto {  
-    const { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active } = _user;
-    let userDto: InfoUserDto = { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active };
+    const { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, deletedAt, createdAt, updatedAt, erased } = _user;
+    let userDto: InfoUserDto = _user;
+    // { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, erased, deletedAt, createdAt, updatedAt };
     return userDto;
   };
 

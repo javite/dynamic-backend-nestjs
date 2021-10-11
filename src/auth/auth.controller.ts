@@ -21,7 +21,8 @@ import { Controller, Body, Post, HttpException, HttpStatus, UsePipes, Get, Req, 
     }
   
     @Post('login')
-    public async login(@Body() loginUserDto: LoginUserDto): Promise<LoginStatus> {
+    public async login(@Body() loginUserDto: LoginUserDto, @Req() req: any): Promise<LoginStatus> {
+      console.log(loginUserDto)
       return await this.authService.login(loginUserDto);
     }
   
