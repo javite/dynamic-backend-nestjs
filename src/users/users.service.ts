@@ -90,7 +90,7 @@ export class UsersService {
 
   toUserDto(_user: User): InfoUserDto {  
     const { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, deletedAt, createdAt, updatedAt, erased } = _user;
-    let userDto: InfoUserDto = _user;
+    let userDto: InfoUserDto = { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, erased, deletedAt, createdAt, updatedAt };
     // { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, erased, deletedAt, createdAt, updatedAt };
     return userDto;
   };

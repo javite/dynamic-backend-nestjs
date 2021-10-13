@@ -36,12 +36,12 @@ export class AuthService {
   async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
     // find user in db
     const user = await this.usersService.findByLogin(loginUserDto);
+    console.log(user);
     // generate and sign token
-    console.log(user)
     const token = this._createToken(user);
 
     return {
-      user: user.user,
+      user: user,
       ...token,
     };
   }

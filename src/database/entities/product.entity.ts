@@ -30,6 +30,9 @@ export class Product {
     @Column({nullable: true})
     speed: number;
 
+    @Column()
+    state: number;
+
     @DeleteDateColumn()
     deletedAt: Date;
 
