@@ -36,12 +36,13 @@ export class ProductsService {
     }
     return product;
   }
-
+  
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productsRepository.findOne(id);
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.BAD_REQUEST);    
     }
+
     await this.productsRepository.update(id, updateProductDto);
     const updatedProduct = await this.productsRepository.findOne(id);
     return updatedProduct;

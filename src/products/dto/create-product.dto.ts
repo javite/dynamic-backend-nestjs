@@ -8,7 +8,7 @@ export class CreateProductDto {
     @IsNotEmpty()
     presentation: string;
 
-    GTIN?: number;
+    GTIN?: string;
 
     internalCode?: string;
 
@@ -22,4 +22,7 @@ export class CreateProductDto {
     weightMin: number;
 
     speed?: number;
+
+    @IsNotEmpty()
+    state?: number;
 }

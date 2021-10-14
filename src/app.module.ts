@@ -7,6 +7,9 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
+import { PosModule } from './pos/pos.module';
+import { BatchesModule } from './batches/batches.module';
+import { UnitsModule } from './units/units.module';
 
 
 @Module({
@@ -27,7 +30,7 @@ import { ProductsModule } from './products/products.module';
     }), 
     ConfigModule.forRoot({
       isGlobal: true,
-    })],
+    }), PosModule, BatchesModule, UnitsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Batch } from "./batch.entity";
+import { PO } from "./po.entity";
 
 @Entity()
 export class Product {
@@ -13,18 +15,18 @@ export class Product {
     presentation: string;
 
     @Column({nullable: true})
-    GTIN: number;
+    GTIN: string;
 
     @Column({nullable: true})
     internalCode: string;
 
-    @Column()
+    @Column("decimal", { precision: 6, scale: 2 })
     weightTarget: number;
 
-    @Column()
+    @Column("decimal", { precision: 6, scale: 2 })
     weightMax: number;
 
-    @Column()
+    @Column("decimal", { precision: 6, scale: 2 })
     weightMin: number;
 
     @Column({nullable: true})
@@ -32,6 +34,12 @@ export class Product {
 
     @Column()
     state: number;
+
+    @OneToMany(()=>PO, po => po.product)
+    pos: PO[];
+
+    @OneToMany(()=>Batch, batch => batch.product)
+    batches: Batch[];
 
     @DeleteDateColumn()
     deletedAt: Date;

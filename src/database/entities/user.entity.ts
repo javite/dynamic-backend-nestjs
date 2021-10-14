@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert, OneToMany } from "typeorm";
 import * as bcrypt from 'bcrypt';
+import { PO } from "./po.entity";
 
 @Entity()
 export class User {
@@ -36,6 +37,9 @@ export class User {
 
     @Column({nullable: true})
     erased: boolean;
+
+    @OneToMany(()=>PO, po => po.user)
+    pos: PO[];
     
     @DeleteDateColumn()
     deletedAt: Date;
