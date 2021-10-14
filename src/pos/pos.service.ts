@@ -31,13 +31,13 @@ export class PosService {
     const product = await this.productsRepository.findOne(createPoDto.productId);
     const po = await this.poRepository.create(createPoDto);
     po.user = user;
-    po.product = product;
+    po.products = [product];
     await this.poRepository.save(po);
     return po;  
   }
 
   async findAll(): Promise<PO[]> {
-    const po = await this.poRepository.find();
+    const po = await this.poRepository.find({relations: ['products']});
     return po;
   }
 

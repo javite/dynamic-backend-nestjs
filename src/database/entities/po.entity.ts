@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { User } from "./user.entity";
 import { Product } from "./product.entity";
 
@@ -23,8 +23,9 @@ export class PO {
     @ManyToOne(()=>User, user=>user.pos)
     user: User;
 
-    @ManyToOne(()=>Product, product=>product.pos)
-    product: Product;
+    @ManyToMany(()=>Product)
+    @JoinTable()
+    products: Product[];
 
     @Column()
     state: number;

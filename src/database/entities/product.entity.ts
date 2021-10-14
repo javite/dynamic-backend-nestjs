@@ -35,8 +35,8 @@ export class Product {
     @Column()
     state: number;
 
-    @OneToMany(()=>PO, po => po.product)
-    pos: PO[];
+    // @OneToMany(()=>PO, po => po.product)
+    // pos: PO[];
 
     @OneToMany(()=>Batch, batch => batch.product)
     batches: Batch[];
