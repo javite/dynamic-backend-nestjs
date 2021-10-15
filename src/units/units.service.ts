@@ -53,6 +53,15 @@ export class UnitsService {
     return units;
   }
 
+  async findFirst(number: number, id: number) {
+    const batch = await this.batchRepository.findOne(id);
+    if (!batch) {
+      throw new HttpException('Lote no existe', HttpStatus.BAD_REQUEST);    
+    }
+    const units = await this.unitRepository.find({where:{batch}, order: {createdAt: "DESC"},take: number});
+    return units;
+  }
+
   update(id: number, updateUnitDto: UpdateUnitDto) {
     return `This action updates a #${id} unit`;
   }

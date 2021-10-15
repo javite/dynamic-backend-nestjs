@@ -17,6 +17,11 @@ export class UnitsController {
     return this.unitsService.findAll();
   }
 
+  @Get('/first/:number/:id')
+  findFirst(@Param('number') number: string, @Param('id') id:string) {
+    return this.unitsService.findFirst(+number, +id);
+  }
+
   @Get(':id')
   findByBatch(@Param('id') id: string) {
     return this.unitsService.findByBatch(+id);

@@ -6,5 +6,8 @@ export class CreateUnitDto {
     state: number;
 
     @IsNotEmpty()
+    value: number;
+
+    @IsNotEmpty()
     batchId: number;
 }

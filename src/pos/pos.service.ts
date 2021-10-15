@@ -51,7 +51,7 @@ export class PosService {
 
   async findOpen(): Promise<PO[]> {
     let state = 1;
-    const po = await this.poRepository.find({where: {state}});
+    const po = await this.poRepository.find({where: {state}, relations: ['products', 'products.batches']});
     if (!po) {
       throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
     }

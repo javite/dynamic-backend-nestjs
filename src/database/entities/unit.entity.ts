@@ -11,6 +11,9 @@ export class Unit {
     @Column()
     state: number;
 
+    @Column("decimal", { precision: 6, scale: 2 })
+    value: number;
+
     @ManyToOne(()=>Batch, batch => batch.units)
     batch: Batch;
 

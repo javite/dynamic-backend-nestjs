@@ -30,7 +30,7 @@ export class ProductsService {
   }
 
   async findOne(id: number): Promise<Product> {
-    const product = await this.productsRepository.findOne(id);
+    const product = await this.productsRepository.findOne(id,{relations: ['batches']});
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.BAD_REQUEST);    
     }
