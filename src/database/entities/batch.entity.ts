@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from "typeorm";
+import { PO } from "./po.entity";
 import { Product } from "./product.entity";
 import { Unit } from "./unit.entity";
 
@@ -43,6 +44,9 @@ export class Batch {
 
     @ManyToOne(()=>Product, product=>product.batches)
     product: Product;
+
+    @ManyToOne(()=>PO, po=>po.batches)
+    po: PO;
 
     @OneToMany(()=>Unit, unit=>unit.batch)
     units: Unit[];

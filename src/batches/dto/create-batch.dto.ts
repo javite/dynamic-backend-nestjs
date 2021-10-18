@@ -5,7 +5,7 @@ export class CreateBatchDto {
     name: string;
 
     @IsNotEmpty()
-    productId: string;
+    productId: number;
 
     expirationDate?: Date;
 
@@ -15,7 +15,6 @@ export class CreateBatchDto {
 
     finishedBatchDate?: Date;
     
-    @IsNotEmpty()
     state?: number;
 
     okTotal?: number;

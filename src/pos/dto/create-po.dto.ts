@@ -12,12 +12,18 @@ export class CreatePoDto {
 
     productId: number;
 
-    batchId: number;
-    
-    @IsNotEmpty()
-    state: number;
-
     @IsNotEmpty()
     userId: number;
+
+    @IsNotEmpty()
+    batchName: string;
+
+    state?: number;
+
+    expirationDate?: Date;
+
+    productionDate?: Date;
+
+    expectedSize?: number;
 
 }

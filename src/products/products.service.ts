@@ -19,7 +19,7 @@ export class ProductsService {
     if (prodInDb) {
         throw new HttpException('Producto ya existe', HttpStatus.BAD_REQUEST);    
     }
-    const product: Product = await this.productsRepository.create(createProductDto);
+    const product = this.productsRepository.create(createProductDto);
     await this.productsRepository.save(product);
     return product;  
   }

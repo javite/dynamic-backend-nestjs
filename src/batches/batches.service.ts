@@ -17,9 +17,9 @@ export class BatchesService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
- 
   async create(createBatchDto: CreateBatchDto): Promise<Batch>{
     const name = createBatchDto.name;
+    createBatchDto.state = 0;
     const batchInDb = await this.batchRepository.findOne({ where: { name } }); 
     if (batchInDb) {
         throw new HttpException('Lote ya existe', HttpStatus.BAD_REQUEST);    

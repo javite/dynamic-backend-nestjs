@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -27,6 +29,9 @@ import { UnitsModule } from './units/units.module';
       entities: [__dirname + './database/entities/*entitie{.ts, .js}'],
       synchronize: true,
       autoLoadEntities: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public')
     }), 
     ConfigModule.forRoot({
       isGlobal: true,
@@ -34,6 +39,4 @@ import { UnitsModule } from './units/units.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  // constructor(private connection: Connection){} entities: [__dirname + './**/**/*entitie{.ts, .js}'],
-}
+export class AppModule {}

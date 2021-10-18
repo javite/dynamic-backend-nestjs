@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   class="ionicon"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="circle.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     id="namedview8"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="1.703125"
+     inkscape:cx="255.70642"
+     inkscape:cy="256.29358"
+     inkscape:window-width="1858"
+     inkscape:window-height="1057"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg6" />
+  <title
+     id="title2">Ellipse</title>
+  <path
+     d="m 256,337.76147 c -45.0828,0 -81.76147,-36.67867 -81.76147,-81.76147 0,-45.0828 36.67867,-81.76147 81.76147,-81.76147 45.0828,0 81.76147,36.67867 81.76147,81.76147 0,45.0828 -36.67867,81.76147 -81.76147,81.76147 z"
+     id="path4"
+     style="fill:#30ccf4;fill-opacity:1;stroke-width:0.393084" />
+</svg>
