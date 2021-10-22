@@ -12,6 +12,16 @@ export class PosController {
     return this.posService.create(createPoDto);
   }
 
+  @Post('/close/:id')
+  close(@Param('id') id: string) {
+    return this.posService.close(id);
+  }
+
+  @Post('/open/:id')
+  open(@Param('id') id: string) {
+    return this.posService.open(id);
+  }
+
   @Get()
   findAll() {
     return this.posService.findAll();
@@ -21,12 +31,16 @@ export class PosController {
   findOpen() {
     return this.posService.findOpen();
   }
+
+  @Get('/state/:state')
+  findState(@Param('state') state: string) {
+    return this.posService.findState(state);
+  }
   
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.posService.findOne(+id);
   }
-
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePoDto: UpdatePoDto) {

@@ -8,6 +8,9 @@ import { PO } from './../database/entities/po.entity';
 import { CreatePoDto } from './dto/create-po.dto';
 import { UpdatePoDto } from './dto/update-po.dto';
 import { CreateBatchDto } from './../batches/dto/create-batch.dto';
+import { UpdateBatchDto } from './../batches/dto/update-batch.dto';
+import { UpdateProductDto } from './../products/dto/update-product.dto';
+
 import { BatchesService } from 'src/batches/batches.service';
 import { ProductsService } from 'src/products/products.service';
 
@@ -61,7 +64,7 @@ export class PosService {
   }
 
   async findOne(id: number): Promise<PO> {
-    const po = await this.poRepository.findOne(id);
+    const po = await this.poRepository.findOne(id,  {relations: ['products', 'batches']});
     if (!po) {
       throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
     }
@@ -70,20 +73,36 @@ export class PosService {
 
   async findOpen(): Promise<PO[]> {
     let state = 1;
-    const po = await this.poRepository.find({where: {state}, relations: ['products', 'products.batches']});
+    const po = await this.poRepository.find({where: {state}, relations: ['products', 'batches']});
     if (!po) {
       throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
     }
     return po;
   }
   
-  async update(id: number, updateProductDto: UpdatePoDto) {
+  async findState(state: string): Promise<PO[]> {
+    const po = await this.poRepository.find({where: {state}, relations: ['products', 'batches']});
+    if (!po) {
+      throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
+    }
+    return po;
+  }
+
+  async update(id: number, updatePoDto: UpdatePoDto) {
     const po = await this.poRepository.findOne(id);
     if (!po) {
       throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
     }
 
-    await this.poRepository.update(id, updateProductDto);
+    let batch: Batch = updatePoDto.batches[0]; //guardo batche y product para actualizarlos
+    let product: Product = updatePoDto.products[0];
+
+    delete updatePoDto["products"]; //los borro porque no se actualizan en cadena.
+    delete updatePoDto["batches"];
+
+    await this.poRepository.update(id, updatePoDto);
+    await this.productsService.update(product.id, product);
+    await this.batchesService.update(batch.id, batch);
     const updatedPO = await this.poRepository.findOne(id);
     return updatedPO;
   }
@@ -93,6 +112,31 @@ export class PosService {
     if (!po) {
       throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
     }
-    return this.poRepository.delete(id);
+    return this.poRepository.softDelete(id);
   }
+
+  async close(id: string): Promise<any> {
+    const po = await this.poRepository.findOne(id);
+    if (!po) {
+      throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
+    }
+    po.state = 2;
+    await this.poRepository.update(po.id, po);
+    
+    const batch = await this.batchesService.close(po.id);
+    return po;
+  }
+
+  async open(id: string): Promise<any> {
+    const po = await this.poRepository.findOne(id);
+    if (!po) {
+      throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
+    }
+    po.state = 1;
+    await this.poRepository.update(po.id, po);
+    
+    const batch = await this.batchesService.open(po.id);
+    return po;
+  }
+
 }

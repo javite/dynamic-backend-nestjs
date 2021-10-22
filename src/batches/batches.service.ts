@@ -66,4 +66,26 @@ export class BatchesService {
     }
     return this.batchRepository.delete(id);
   }
+
+  async close(po: number): Promise<boolean> {
+    const batches = await this.batchRepository.find({where: {po}});
+    const batch = batches[0];
+    if (!batch) {
+      throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
+    }
+    batch.state = 2;
+    await this.batchRepository.update(batch.id, batch)
+    return true;
+  }
+
+  async open(po: number): Promise<boolean> {
+    const batches = await this.batchRepository.find({where: {po}});
+    const batch = batches[0];
+    if (!batch) {
+      throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
+    }
+    batch.state = 1;
+    await this.batchRepository.update(batch.id, batch)
+    return true;
+  }
 }
