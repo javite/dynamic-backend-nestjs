@@ -32,6 +32,9 @@ export class Product {
     @Column({nullable: true})
     speed: number;
 
+    @Column({nullable: true})
+    width: number;
+
     @Column()
     state: number;
 
