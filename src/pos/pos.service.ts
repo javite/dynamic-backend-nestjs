@@ -26,11 +26,15 @@ export class PosService {
   ) {}
 
   async create(createPoDto: CreatePoDto): Promise<PO>{
+    console.log(createPoDto);
     const name = createPoDto.name;
     let createBatchDTO = new CreateBatchDto();
-    createBatchDTO.name = createPoDto.batchName;
+    createBatchDTO.name = createPoDto.batch.name;
     createBatchDTO.productId = createPoDto.productId;
     createBatchDTO.state = 0;
+    createBatchDTO.expectedSize = createPoDto.batch.expectedSize;
+    createBatchDTO.expirationDate = createPoDto.batch.expirationDate;
+    createBatchDTO.productionDate = createPoDto.batch.productionDate;
 
     const poInDb = await this.poRepository.findOne({ where: { name } }); // check if the user exists in the db    
     if (poInDb) {

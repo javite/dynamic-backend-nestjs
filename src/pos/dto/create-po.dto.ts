@@ -1,4 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
+import { Batch } from 'src/database/entities/batch.entity';
 
 export class CreatePoDto {
 
@@ -15,15 +16,6 @@ export class CreatePoDto {
     @IsNotEmpty()
     userId: number;
 
-    @IsNotEmpty()
-    batchName: string;
-
-    state?: number;
-
-    expirationDate?: Date;
-
-    productionDate?: Date;
-
-    expectedSize?: number;
+    batch: Batch;
 
 }
