@@ -53,6 +53,6 @@ export class ProductsService {
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.BAD_REQUEST);    
     }
-    return this.productsRepository.delete(id);
+    return this.productsRepository.softDelete(id);
   }
 }

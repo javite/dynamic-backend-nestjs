@@ -35,6 +35,11 @@ export class PosService {
     createBatchDTO.expectedSize = createPoDto.batch.expectedSize;
     createBatchDTO.expirationDate = createPoDto.batch.expirationDate;
     createBatchDTO.productionDate = createPoDto.batch.productionDate;
+    createBatchDTO.nokHigh = 0;
+    createBatchDTO.nokLow = 0;
+    createBatchDTO.nokOther = 0;
+    createBatchDTO.nokTotal = 0;
+    createBatchDTO.okTotal = 0;
 
     const poInDb = await this.poRepository.findOne({ where: { name } }); // check if the user exists in the db    
     if (poInDb) {
@@ -63,7 +68,7 @@ export class PosService {
   }
 
   async findAll(): Promise<PO[]> {
-    const po = await this.poRepository.find({relations: ['products']});
+    const po = await this.poRepository.find({relations: ['products', 'batches']});
     return po;
   }
 
