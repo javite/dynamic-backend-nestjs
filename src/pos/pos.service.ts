@@ -104,15 +104,16 @@ export class PosService {
       throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
     }
 
-    let batch: Batch = updatePoDto.batches[0]; //guardo batche y product para actualizarlos
+    let batch: Batch = updatePoDto.batches[0]; //guardo batch y product para actualizarlos
     let product: Product = updatePoDto.products[0];
-
+    delete product["batches"];
     delete updatePoDto["products"]; //los borro porque no se actualizan en cadena.
     delete updatePoDto["batches"];
 
     await this.poRepository.update(id, updatePoDto);
     await this.productsService.update(product.id, product);
     await this.batchesService.update(batch.id, batch);
+
     const updatedPO = await this.poRepository.findOne(id);
     return updatedPO;
   }

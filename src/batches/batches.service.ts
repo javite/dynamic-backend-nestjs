@@ -49,14 +49,14 @@ export class BatchesService {
   }
 
   async update(id: number, updateBatchDto: UpdateBatchDto) {
-    const po = await this.batchRepository.findOne(id);
-    if (!po) {
-      throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
+    const batch = await this.batchRepository.findOne(id);
+    if (!batch) {
+      throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
     }
 
     await this.batchRepository.update(id, updateBatchDto);
-    const updatedPO = await this.batchRepository.findOne(id);
-    return updatedPO;
+    const updatedBatch = await this.batchRepository.findOne(id);
+    return updatedBatch;
   }
 
   async remove(id: number): Promise<DeleteResult> {
