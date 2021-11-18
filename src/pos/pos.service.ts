@@ -41,7 +41,7 @@ export class PosService {
     createBatchDTO.nokTotal = 0;
     createBatchDTO.okTotal = 0;
 
-    const poInDb = await this.poRepository.findOne({ where: { name } }); // check if the user exists in the db    
+    const poInDb = await this.poRepository.findOne({ where: { name } }); // check if the PO exists in the db    
     if (poInDb) {
         throw new HttpException('PO ya existe', HttpStatus.BAD_REQUEST);    
     }
@@ -98,6 +98,7 @@ export class PosService {
   }
 
   async update(id: number, updatePoDto: UpdatePoDto) {
+    console.log(updatePoDto);
     const po = await this.poRepository.findOne(id);
     if (!po) {
       throw new HttpException('PO not found', HttpStatus.BAD_REQUEST);    
