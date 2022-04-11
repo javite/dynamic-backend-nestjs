@@ -111,7 +111,10 @@ export class PosService {
     delete updatePoDto["batches"];
 
     await this.poRepository.update(id, updatePoDto);
+    po.products = [product];
+    await this.poRepository.save(po);
     await this.productsService.update(product.id, product);
+    batch.product = product;
     await this.batchesService.update(batch.id, batch);
 
     const updatedPO = await this.poRepository.findOne(id);

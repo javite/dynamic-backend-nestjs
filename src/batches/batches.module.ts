@@ -4,9 +4,9 @@ import { BatchesController } from './batches.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from 'src/database/entities/product.entity';
 import { Batch } from 'src/database/entities/batch.entity';
-
+import { Unit } from 'src/database/entities/unit.entity';
 @Module({
-  imports:  [TypeOrmModule.forFeature([Batch,Product])],
+  imports:  [TypeOrmModule.forFeature([Unit, Batch, Product])],
   controllers: [BatchesController],
   providers: [BatchesService]
 })

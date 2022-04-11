@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 
+import { Unit } from 'src/database/entities/unit.entity';
 import { Batch } from 'src/database/entities/batch.entity';
 import { Product } from 'src/database/entities/product.entity';
 import { CreateBatchDto } from './dto/create-batch.dto';
@@ -11,6 +12,8 @@ import { UpdateBatchDto } from './dto/update-batch.dto';
 @Injectable()
 export class BatchesService {
   constructor(
+    @InjectRepository(Unit)
+    private readonly unitRepository: Repository<Unit>,
     @InjectRepository(Batch)
     private readonly batchRepository: Repository<Batch>,
     @InjectRepository(Product)
@@ -73,7 +76,20 @@ export class BatchesService {
     if (!batch) {
       throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
     }
+    
+    const okTotal: number = await this.unitRepository.count({where:{batch , state: 0}});  //state: 0 ok, 1 high, 2 low, 3 other
+    const nokHigh: number = await this.unitRepository.count({where:{batch , state: 1}});  //state: 0 ok, 1 high, 2 low, 3 other
+    const nokLow: number = await this.unitRepository.count({where:{batch , state: 2}});  //state: 0 ok, 1 high, 2 low, 3 other
+    const nokOther: number = await this.unitRepository.count({where:{batch , state: 3}});  //state: 0 ok, 1 high, 2 low, 3 other
+
     batch.state = 2;
+    batch.okTotal = okTotal;
+    batch.nokHigh = nokHigh;
+    batch.nokLow = nokLow;
+    batch.nokOther = nokOther;
+    batch.nokTotal = nokHigh + nokLow + nokOther;
+
+    console.log("BAtch closed: ", batch);
     await this.batchRepository.update(batch.id, batch)
     return true;
   }

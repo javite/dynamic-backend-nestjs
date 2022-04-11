@@ -17,9 +17,9 @@ export class UnitsController {
     return this.unitsService.findAll();
   }
 
-  @Get('/first/:number/:id')
-  findFirst(@Param('number') number: string, @Param('id') id:string) {
-    return this.unitsService.findFirst(+number, +id);
+  @Get('/list/stats/:number/:id')
+  listAndStats(@Param('number') number: string, @Param('id') id:string) {
+    return this.unitsService.listAndStats(+number, +id);
   }
 
   @Get(':id')

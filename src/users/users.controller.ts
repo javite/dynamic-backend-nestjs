@@ -27,7 +27,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const user = await this.usersService.findOne(+id);
+    const user = await this.usersService.findOne(+id); 
     return user;
   }
 

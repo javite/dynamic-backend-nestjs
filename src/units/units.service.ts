@@ -21,21 +21,22 @@ export class UnitsService {
         throw new HttpException('Lote no existe', HttpStatus.BAD_REQUEST);    
     }
     const unit = this.unitRepository.create(createUnitDto);
-    unit.batch = batch;
-    if(unit.state === 0){
-      batch.okTotal = batch.okTotal + 1;
-    } else if(unit.state === 1){
-      batch.nokTotal = batch.nokTotal + 1;
-      batch.nokHigh = batch.nokHigh + 1;
-    } else if(unit.state === 2){
-      batch.nokTotal = batch.nokTotal + 1;
-      batch.nokLow = batch.nokLow + 1;
-    } else {
-      batch.nokTotal = batch.nokTotal + 1;
-      batch.nokOther = batch.nokOther + 1;
-    }
+    unit.batch = batch; 
+    //saves the estatistics in the batch, disabled because of performance reason. The stats are saved when PO is closed.
+    // if(unit.state === 0){
+    //   batch.okTotal = batch.okTotal + 1;
+    // } else if(unit.state === 1){
+    //   batch.nokTotal = batch.nokTotal + 1;
+    //   batch.nokHigh = batch.nokHigh + 1;
+    // } else if(unit.state === 2){
+    //   batch.nokTotal = batch.nokTotal + 1;
+    //   batch.nokLow = batch.nokLow + 1;
+    // } else {
+    //   batch.nokTotal = batch.nokTotal + 1;
+    //   batch.nokOther = batch.nokOther + 1;
+    // }
     await this.unitRepository.save(unit);
-    await this.batchRepository.save(batch);
+    // await this.batchRepository.save(batch);
     return unit;  
   }
 
@@ -53,13 +54,20 @@ export class UnitsService {
     return units;
   }
 
-  async findFirst(number: number, id: number) {
+  async listAndStats(number: number, id: number) {
     const batch = await this.batchRepository.findOne(id);
     if (!batch) {
       throw new HttpException('Lote no existe', HttpStatus.BAD_REQUEST);    
     }
-    const units = await this.unitRepository.find({where:{batch}, order: {createdAt: "DESC"},take: number});
-    return units;
+    const list = await this.unitRepository.find({where:{batch}, order: {createdAt: "DESC"}, take: number});
+    let okTotal: number = await this.unitRepository.count({where:{batch , state: 0}});  //state: 0 ok, 1 high, 2 low, 3 other
+    let nokHigh: number = await this.unitRepository.count({where:{batch , state: 1}});  //state: 0 ok, 1 high, 2 low, 3 other
+    let nokLow: number = await this.unitRepository.count({where:{batch , state: 2}});  //state: 0 ok, 1 high, 2 low, 3 other
+    let nokOther: number = await this.unitRepository.count({where:{batch , state: 3}});  //state: 0 ok, 1 high, 2 low, 3 other
+   
+    let stats = {okTotal, nokLow, nokHigh, nokOther};
+    return {list, stats};
+
   }
 
   update(id: number, updateUnitDto: UpdateUnitDto) {
