@@ -55,17 +55,26 @@ export class UnitsService {
   }
 
   async listAndStats(number: number, id: number) {
+    const startTime: number = Date.now();
     const batch = await this.batchRepository.findOne(id);
     if (!batch) {
       throw new HttpException('Lote no existe', HttpStatus.BAD_REQUEST);    
     }
+    console.log("After batch", Date.now());
     const list = await this.unitRepository.find({where:{batch}, order: {createdAt: "DESC"}, take: number});
+    console.log("After list", Date.now());
+
     let okTotal: number = await this.unitRepository.count({where:{batch , state: 0}});  //state: 0 ok, 1 high, 2 low, 3 other
+    console.log("After first count", Date.now());
+
     let nokHigh: number = await this.unitRepository.count({where:{batch , state: 1}});  //state: 0 ok, 1 high, 2 low, 3 other
     let nokLow: number = await this.unitRepository.count({where:{batch , state: 2}});  //state: 0 ok, 1 high, 2 low, 3 other
     let nokOther: number = await this.unitRepository.count({where:{batch , state: 3}});  //state: 0 ok, 1 high, 2 low, 3 other
-   
     let stats = {okTotal, nokLow, nokHigh, nokOther};
+
+    const endTime: number =  Date.now();
+    var timeDiff = endTime - startTime; //in ms
+    console.log("Consulte listAndStats: ", timeDiff);
     return {list, stats};
 
   }
