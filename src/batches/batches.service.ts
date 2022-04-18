@@ -89,7 +89,7 @@ export class BatchesService {
     batch.nokOther = nokOther;
     batch.nokTotal = nokHigh + nokLow + nokOther;
 
-    console.log("BAtch closed: ", batch);
+    console.log("Batch closed: ", batch);
     await this.batchRepository.update(batch.id, batch)
     return true;
   }

@@ -16,27 +16,32 @@ export class UnitsService {
   ) {}
 
    async create(createUnitDto: CreateUnitDto): Promise<Unit>{
+    // const startTime: number = Date.now();
     const batch = await this.batchRepository.findOne(createUnitDto.batchId); 
     if (!batch) {
         throw new HttpException('Lote no existe', HttpStatus.BAD_REQUEST);    
     }
+
     const unit = this.unitRepository.create(createUnitDto);
     unit.batch = batch; 
-    //saves the estatistics in the batch, disabled because of performance reason. The stats are saved when PO is closed.
-    // if(unit.state === 0){
-    //   batch.okTotal = batch.okTotal + 1;
-    // } else if(unit.state === 1){
-    //   batch.nokTotal = batch.nokTotal + 1;
-    //   batch.nokHigh = batch.nokHigh + 1;
-    // } else if(unit.state === 2){
-    //   batch.nokTotal = batch.nokTotal + 1;
-    //   batch.nokLow = batch.nokLow + 1;
-    // } else {
-    //   batch.nokTotal = batch.nokTotal + 1;
-    //   batch.nokOther = batch.nokOther + 1;
-    // }
+    // saves the estatistics in the batch, disabled because of performance reason. The stats are saved when PO is closed.
+    if(unit.state === 0){
+      batch.okTotal = batch.okTotal + 1;
+    } else if(unit.state === 1){
+      batch.nokTotal = batch.nokTotal + 1;
+      batch.nokHigh = batch.nokHigh + 1;
+    } else if(unit.state === 2){
+      batch.nokTotal = batch.nokTotal + 1;
+      batch.nokLow = batch.nokLow + 1;
+    } else {
+      batch.nokTotal = batch.nokTotal + 1;
+      batch.nokOther = batch.nokOther + 1;
+    }
     await this.unitRepository.save(unit);
-    // await this.batchRepository.save(batch);
+    await this.batchRepository.save(batch);
+
+    // let timeDiff = Date.now() - startTime; //in ms
+    // console.log("Consulta create unit: ", timeDiff);
     return unit;  
   }
 
@@ -55,28 +60,29 @@ export class UnitsService {
   }
 
   async listAndStats(number: number, id: number) {
-    const startTime: number = Date.now();
+    // const startTime: number = Date.now();
     const batch = await this.batchRepository.findOne(id);
     if (!batch) {
       throw new HttpException('Lote no existe', HttpStatus.BAD_REQUEST);    
     }
-    console.log("After batch", Date.now());
-    const list = await this.unitRepository.find({where:{batch}, order: {createdAt: "DESC"}, take: number});
-    console.log("After list", Date.now());
-
+    const list = await this.unitRepository.find({where:{batch}, order: {createdAt: "DESC"}, take: number}); //
+    let okTotal: number = batch.okTotal;
+    let nokHigh: number = batch.nokHigh
+    let nokLow: number =  batch.nokLow
+    let nokOther: number = batch.nokOther
+    let stats = {okTotal, nokLow, nokHigh, nokOther};
+    /* Alternativa, en vez de traer contadores del lote hace llos counts, puse indices para acelerar porque tardaba 30 segundos con 500000 unidades. 
+    Ahora tarda mucho menos pero es mas eficiente llevar la cuenta en el metodo create
     let okTotal: number = await this.unitRepository.count({where:{batch , state: 0}});  //state: 0 ok, 1 high, 2 low, 3 other
-    console.log("After first count", Date.now());
-
     let nokHigh: number = await this.unitRepository.count({where:{batch , state: 1}});  //state: 0 ok, 1 high, 2 low, 3 other
     let nokLow: number = await this.unitRepository.count({where:{batch , state: 2}});  //state: 0 ok, 1 high, 2 low, 3 other
     let nokOther: number = await this.unitRepository.count({where:{batch , state: 3}});  //state: 0 ok, 1 high, 2 low, 3 other
-    let stats = {okTotal, nokLow, nokHigh, nokOther};
-
-    const endTime: number =  Date.now();
-    var timeDiff = endTime - startTime; //in ms
-    console.log("Consulte listAndStats: ", timeDiff);
+    let stats = {okTotal, nokLow, nokHigh, nokOther};  
+    */
+    // let timeDiff = Date.now() - startTime;
+    // console.log("Consulta listAndStats: ", timeDiff);
+    
     return {list, stats};
-
   }
 
   update(id: number, updateUnitDto: UpdateUnitDto) {

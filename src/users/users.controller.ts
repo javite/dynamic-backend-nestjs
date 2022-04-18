@@ -17,14 +17,14 @@ export class UsersController {
     return user;
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll() {
     const users = await this.usersService.findAll();
     return users;
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const user = await this.usersService.findOne(+id); 
