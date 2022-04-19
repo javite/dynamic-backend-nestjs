@@ -12,8 +12,7 @@ import { ProductsModule } from './products/products.module';
 import { PosModule } from './pos/pos.module';
 import { BatchesModule } from './batches/batches.module';
 import { UnitsModule } from './units/units.module';
-
-
+import { AuditTrailModule } from './audit-trail/audit-trail.module';
 @Module({
   imports: [
     UsersModule, 
@@ -35,7 +34,7 @@ import { UnitsModule } from './units/units.module';
     }), 
     ConfigModule.forRoot({
       isGlobal: true,
-    }), PosModule, BatchesModule, UnitsModule],
+    }), PosModule, BatchesModule, UnitsModule, AuditTrailModule],
   controllers: [AppController],
   providers: [AppService],
 })

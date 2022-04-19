@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { PosService } from './pos.service';
 import { CreatePoDto } from './dto/create-po.dto';
 import { UpdatePoDto } from './dto/update-po.dto';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('pos')
 export class PosController {
@@ -10,20 +10,22 @@ export class PosController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createPoDto: CreatePoDto) {
+  create(@Body() createPoDto: CreatePoDto) {  
     return this.posService.create(createPoDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/close/:id')
-  close(@Param('id') id: string) {
-    return this.posService.close(id);
+  close(@Request() req: any, @Param('id') id: string) {
+    const user = req.user;
+    return this.posService.close(id, user);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/open/:id')
-  open(@Param('id') id: string) {
-    return this.posService.open(id);
+  open(@Request() req: any, @Param('id') id: string) {
+    const user = req.user;
+    return this.posService.open(id, user);
   }
 
   @Get()
@@ -48,13 +50,15 @@ export class PosController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePoDto: UpdatePoDto) {
-    return this.posService.update(+id, updatePoDto);
+  update(@Request() req: any, @Param('id') id: string, @Body() updatePoDto: UpdatePoDto) {
+    const user = req.user;
+    return this.posService.update(+id, updatePoDto, user);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.posService.remove(+id);
+  remove(@Request() req: any, @Param('id') id: string) {
+    const user = req.user;
+    return this.posService.remove(+id, user);
   }
 }

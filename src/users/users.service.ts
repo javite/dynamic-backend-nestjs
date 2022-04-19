@@ -21,7 +21,7 @@ export class UsersService {
     if (userInDb) {
         throw new HttpException('Usuario ya existe', HttpStatus.BAD_REQUEST);    
     }
-    const _user: User = await this.usersRepository.create({ user, password, firstName, lastName, level, groupLevel });
+    const _user: User = this.usersRepository.create({ user, password, firstName, lastName, level, groupLevel });
     await this.usersRepository.save(_user);
     return this.toUserDto(_user);  
   }
