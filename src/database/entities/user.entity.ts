@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert, OneToMany } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { PO } from "./po.entity";
+import { AuditTrail } from "./audit-trail.entity";
 
 @Entity()
 export class User {
@@ -40,6 +41,9 @@ export class User {
 
     @OneToMany(()=>PO, po => po.user)
     pos: PO[];
+
+    @OneToMany(()=>AuditTrail, auditTrail=>auditTrail.user)
+    auditTrail: AuditTrail[];
     
     @DeleteDateColumn()
     deletedAt: Date;

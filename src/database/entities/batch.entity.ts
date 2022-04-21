@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from "typeorm";
+import { AuditTrail } from "./audit-trail.entity";
 import { PO } from "./po.entity";
 import { Product } from "./product.entity";
 import { Unit } from "./unit.entity";
@@ -50,6 +51,9 @@ export class Batch {
 
     @OneToMany(()=>Unit, unit=>unit.batch)
     units: Unit[];
+
+    @OneToMany(()=>AuditTrail, auditTrail=>auditTrail.batch)
+    auditTrail: AuditTrail[];
 
     @DeleteDateColumn()
     deletedAt: Date;
