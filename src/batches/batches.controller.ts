@@ -24,11 +24,11 @@ export class BatchesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
-    return this.batchesService.update(+id, updateBatchDto);
+    return this.batchesService.update(+id, updateBatchDto, null);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.batchesService.remove(+id);
+    return this.batchesService.remove(+id, null);
   }
 }

@@ -2,8 +2,11 @@ import { IsNotEmpty } from "class-validator";
 
 export class CreateAuditTrailDto {
     @IsNotEmpty()
-    eventType: string;
-
+    eventType: number;
+    
+    @IsNotEmpty()
+    object: number;
+    
     @IsNotEmpty()
     fieldName: string;
 

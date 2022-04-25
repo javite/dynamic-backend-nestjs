@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { UsersService } from './users.service';
@@ -12,8 +12,9 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
+  async create(@Request() req: any, @Body() createUserDto: CreateUserDto) {
+    const userLoggued = req.user;
+    const user = await this.usersService.create(createUserDto, userLoggued);
     return user;
   }
 
@@ -33,15 +34,17 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    const user = await this.usersService.update(+id, updateUserDto);
+  async update(@Request() req: any, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const userLoggued = req.user;
+    const user = await this.usersService.update(+id, updateUserDto, userLoggued);
     return user;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const user = await this.usersService.remove(+id);
+  async remove(@Request() req: any, @Param('id') id: string) {
+    const userLoggued = req.user;
+    const user = await this.usersService.remove(+id, userLoggued);
     return user;
   }
 }

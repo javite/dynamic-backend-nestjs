@@ -7,23 +7,28 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './../database/entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { InfoUserDto } from './dto/info-user.dto';
+import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private auditTrailService: AuditTrailService
   ) {}
  
-  async create(userDto: CreateUserDto): Promise<InfoUserDto> {    
+  async create(userDto: CreateUserDto, userLogged: any): Promise<InfoUserDto> {    
     const { user, password, firstName, lastName, level, groupLevel } = userDto;
     const userInDb = await this.usersRepository.findOne({ where: { user } }); // check if the user exists in the db    
     if (userInDb) {
         throw new HttpException('Usuario ya existe', HttpStatus.BAD_REQUEST);    
     }
     const _user: User = this.usersRepository.create({ user, password, firstName, lastName, level, groupLevel });
-    await this.usersRepository.save(_user);
-    return this.toUserDto(_user);  
+    const userCreated = await this.usersRepository.save(_user);
+    if(userCreated){
+      this.auditTrailService.auditLogEvent(1, 4, this.buildUserName(userCreated), userLogged, undefined, undefined);
+    }
+    return this.toUserDto(userCreated);
   }
 
   async findAll(): Promise<InfoUserDto[]> {
@@ -44,44 +49,40 @@ export class UsersService {
     return this.toUserDto(_user);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const _user = await this.usersRepository.findOne(id);
-    if (!_user) {
+  async update(id: number, updateUserDto: UpdateUserDto, userLoggued: any) {
+    const user = await this.usersRepository.findOne(id);
+    if (!user) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
-    _user.firstName = updateUserDto.firstName;
-    _user.lastName = updateUserDto.lastName;
-    _user.level = updateUserDto.level;
-    _user.groupLevel = updateUserDto.groupLevel;
-    _user.passExpirationDate = updateUserDto.passExpirationDate;
-    _user.active = updateUserDto.active;
-    _user.erased = updateUserDto.erased;
-    await this.usersRepository.update(id, _user);
-
-    return this.toUserDto(_user);
-
+    await this.usersRepository.update(id, updateUserDto);
+    const updatedUser = await this.usersRepository.findOne(id);
+    if(updatedUser){
+      this.auditTrailService.auditLogDifference(4, user, updatedUser, userLoggued, undefined);
+    }
+    delete updatedUser.password;
+    delete updatedUser.token;
+    return updatedUser;
   }
 
-  async remove(id: number): Promise<DeleteResult> {
-    const _user = await this.usersRepository.findOne(id);
-    if (!_user) {
+  async remove(id: number, userLoggued: any): Promise<DeleteResult> {
+    const user = await this.usersRepository.findOne(id);
+    if (!user) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
-    _user.erased = true;
-    await this.usersRepository.update(id, _user);
+    this.auditTrailService.auditLogEvent(2, 4, this.buildUserName(user), userLoggued, undefined);
     return this.usersRepository.softDelete(id);
   }
 
   async findByLogin({ user, password }: LoginUserDto): Promise<InfoUserDto> {    
-    const _user = await this.usersRepository.findOne({ where: { user } });
-    if (!_user) {
+    const userInDb = await this.usersRepository.findOne({ where: { user } });
+    if (!userInDb) {
         throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
-    const areEqual = await this.comparePasswords(_user.password, password);     // compare passwords    
+    const areEqual = await this.comparePasswords(userInDb.password, password);     // compare passwords    
     if (!areEqual) {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);    
     }
-    return this.toUserDto(_user);  
+    return this.toUserDto(userInDb);  
   }
   
   async findByPayload({ user }: any): Promise<InfoUserDto> {
@@ -98,4 +99,8 @@ export class UsersService {
   async comparePasswords(userPassword, currentPassword){
     return await bcrypt.compare(currentPassword, userPassword);
   };
+
+  buildUserName(user: User){
+    return user.firstName + ' ' + user.lastName + ' - (' + user.user + ')';
+  }
 }
