@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
 import { Batch } from 'src/database/entities/batch.entity';
 import { User } from 'src/database/entities/user.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import {diff} from 'deep-diff';
 
 import { CreateAuditTrailDto } from './dto/create-audit-trail.dto';
@@ -21,15 +21,17 @@ export class AuditTrailService {
   ) {}
 
   async create(createAuditTrailDto: CreateAuditTrailDto): Promise<AuditTrail> {
-    const batchInDb = await this.batchRepository.findOne(createAuditTrailDto.batchId); 
-    if (!batchInDb) {
-        throw new HttpException('El Lote no existe', HttpStatus.BAD_REQUEST);    
+    let batchInDb = undefined;
+    if(createAuditTrailDto.batchId != undefined){
+      batchInDb = await this.batchRepository.findOne(createAuditTrailDto.batchId); 
+      if (!batchInDb) {
+          throw new HttpException('El Lote no existe', HttpStatus.BAD_REQUEST);    
+      }
     }
     const userInDb = await this.usersRepository.findOne(createAuditTrailDto.userId); // check if the user exists in the db    
     if (!userInDb) {
         throw new HttpException('El Usuario no existe', HttpStatus.BAD_REQUEST);    
     }
-
     const newLog = this.auditTrailRepository.create(createAuditTrailDto);
     newLog.batch = batchInDb;
     newLog.user = userInDb;
@@ -55,32 +57,40 @@ export class AuditTrailService {
     throw new HttpException('Los logs no se pueden borrar', HttpStatus.BAD_REQUEST); 
   }
 
-  public auditLogDifference(lrh: any, rhs: any, user: any, batch: any){
-    const difference = diff(JSON.parse(JSON.stringify(lrh)), JSON.parse(JSON.stringify(rhs)));
+  public auditLogDifference(object: number, previousValue: any, newValue: any, user: any, batch: any){
+    const difference = diff(JSON.parse(JSON.stringify(previousValue)), JSON.parse(JSON.stringify(newValue)));
+    if(difference === undefined) return;
     let differenceArray = JSON.parse(JSON.stringify(difference));
     differenceArray.map(dif => {
       if(dif.kind === 'E'){
         let audit = new CreateAuditTrailDto();
-        audit.eventType = "modif";
+        audit.eventType = 0;
+        audit.object = object;
         audit.fieldName = dif.path[0];
-        audit.newValue = dif.lhs;
-        audit.previousValue = dif.rhs;
+        audit.previousValue= dif.lhs;
+        audit.newValue = dif.rhs;
         audit.userId = user.id;
-        audit.batchId = batch.id;
+        if(batch != undefined){
+          audit.batchId = batch.id;
+        }
         this.create(audit);
       }
     })
   }
 
-  public auditLogNew(type: string, name: any, user: any, batch: any, file?:any){
+  public auditLogEvent(eventType: number, object: number, name: any, user: any, batch: any = undefined, file?:any){
     let audit = new CreateAuditTrailDto();
-    audit.eventType = "create";
-    audit.fieldName = type;
+    audit.eventType = eventType;
+    audit.object = object;
+    audit.fieldName = 'nombre';
     audit.newValue = name;
     audit.previousValue = '-';
     audit.userId = user.id;
-    audit.batchId = batch.id;
-    audit.file = JSON.stringify(file);
+    audit.batchId = batch != undefined ? batch.id :undefined;
+    if(eventType === 1 && file != undefined){ //0: modify, 1: new, 2: delete, 3: open, 4: close
+      audit.file = JSON.stringify(file);
+    }
     this.create(audit);
   }
+
 }

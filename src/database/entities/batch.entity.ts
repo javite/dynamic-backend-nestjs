@@ -14,10 +14,10 @@ export class Batch {
     name: string;
 
     @Column({nullable: true})
-    expirationDate: Date;
+    expirationDate: string;
 
     @Column({nullable: true})
-    productionDate: Date;
+    productionDate: string;
 
     @Column({nullable: true})
     expectedSize: number;

@@ -12,7 +12,11 @@ export class AuditTrail {
 
     @Index()
     @Column()
-    eventType: string;
+    eventType: number;
+
+    @Index()
+    @Column()
+    object: number;
 
     @Index()
     @Column()
@@ -30,7 +34,7 @@ export class AuditTrail {
     @ManyToOne(()=>User, user=>user.auditTrail)
     user: User;
 
-    @ManyToOne(()=>Batch, batch=>batch.auditTrail)
+    @ManyToOne(()=>Batch, batch=>batch.auditTrail, {nullable: true})
     batch: Batch;
 
     @Index()

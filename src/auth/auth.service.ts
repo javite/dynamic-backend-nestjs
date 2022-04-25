@@ -15,14 +15,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(userDto: CreateUserDto): Promise<RegistrationStatus> {
+  async register(userDto: CreateUserDto, userLoggued: any): Promise<RegistrationStatus> {
     let status: RegistrationStatus = {
       success: true,
       message: 'user registered',
     };
 
     try {
-      await this.usersService.create(userDto);
+      await this.usersService.create(userDto, userLoggued);
     } catch (err) {
       status = {
         success: false,
@@ -36,7 +36,6 @@ export class AuthService {
   async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
     // find user in db
     const user = await this.usersService.findByLogin(loginUserDto);
-    console.log(user);
     // generate and sign token
     const token = this._createToken(user);
 

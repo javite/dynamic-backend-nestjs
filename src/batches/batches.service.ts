@@ -7,7 +7,7 @@ import { Batch } from 'src/database/entities/batch.entity';
 import { Product } from 'src/database/entities/product.entity';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
-
+import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 
 @Injectable()
 export class BatchesService {
@@ -18,6 +18,7 @@ export class BatchesService {
     private readonly batchRepository: Repository<Batch>,
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+    private auditTrailService: AuditTrailService
   ) {}
 
   async create(createBatchDto: CreateBatchDto): Promise<Batch>{
@@ -34,8 +35,12 @@ export class BatchesService {
     
     const batch = this.batchRepository.create(createBatchDto);
     batch.product = product;
-    await this.batchRepository.save(batch);
-    return batch;  
+    const batchCreated = await this.batchRepository.save(batch);
+
+    if(batchCreated){
+      this.auditTrailService.auditLogEvent(1, 2 ,batch.name, createBatchDto.userId, batch, batch);
+    }
+    return batch;
   }
 
   async findAll(): Promise<Batch[]> {
@@ -51,7 +56,7 @@ export class BatchesService {
     return batch;
   }
 
-  async update(id: number, updateBatchDto: UpdateBatchDto) {
+  async update(id: number, updateBatchDto: UpdateBatchDto, user: any) {
     const batch = await this.batchRepository.findOne(id);
     if (!batch) {
       throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
@@ -59,18 +64,22 @@ export class BatchesService {
 
     await this.batchRepository.update(id, updateBatchDto);
     const updatedBatch = await this.batchRepository.findOne(id);
+
+    this.auditTrailService.auditLogDifference(2, batch, updatedBatch, user, batch)
+
     return updatedBatch;
   }
 
-  async remove(id: number): Promise<DeleteResult> {
+  async remove(id: number, user: any): Promise<DeleteResult> {
     const batch = await this.batchRepository.findOne(id);
     if (!batch) {
       throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
     }
+    this.auditTrailService.auditLogEvent(2, 2, batch.name, user, batch);
     return this.batchRepository.delete(id);
   }
 
-  async close(po: number): Promise<boolean> {
+  async close(po: number, user: any): Promise<boolean> {
     const batches = await this.batchRepository.find({where: {po}});
     const batch = batches[0];
     if (!batch) {
@@ -88,20 +97,33 @@ export class BatchesService {
     batch.nokLow = nokLow;
     batch.nokOther = nokOther;
     batch.nokTotal = nokHigh + nokLow + nokOther;
-
-    console.log("Batch closed: ", batch);
-    await this.batchRepository.update(batch.id, batch)
+    
+    const batchUpdated = await this.batchRepository.update(batch.id, batch);
+    if(batchUpdated){
+      this.auditTrailService.auditLogEvent(4, 2 , batch.name, user, batch);
+    } else {
+      batch.state = 1;
+      await this.batchRepository.update(batch.id, batch);
+      return false;
+    }
     return true;
   }
 
-  async open(po: number): Promise<boolean> {
+  async open(po: number, user: any): Promise<boolean> {
     const batches = await this.batchRepository.find({where: {po}});
     const batch = batches[0];
     if (!batch) {
       throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
     }
     batch.state = 1;
-    await this.batchRepository.update(batch.id, batch)
+    const batchUpdated = await this.batchRepository.update(batch.id, batch);
+    if(batchUpdated){
+      this.auditTrailService.auditLogEvent(3, 2 , batch.name, user, batch);
+    } else {
+      await this.batchRepository.update(batch.id, batch);
+      batch.state = 0;
+      return false;
+    }
     return true;
   }
 }

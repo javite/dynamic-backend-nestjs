@@ -2,14 +2,17 @@ import { IsNotEmpty } from "class-validator";
 
 export class CreateBatchDto {
     @IsNotEmpty()
+    userId: number;
+
+    @IsNotEmpty()
     name: string;
 
     @IsNotEmpty()
     productId: number;
 
-    expirationDate?: Date;
+    expirationDate?: string;
 
-    productionDate?: Date;
+    productionDate?: string;
 
     expectedSize?: number;
 

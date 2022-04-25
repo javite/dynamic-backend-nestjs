@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Batch } from "./batch.entity";
-import { PO } from "./po.entity";
 
 @Entity()
 export class Product {
