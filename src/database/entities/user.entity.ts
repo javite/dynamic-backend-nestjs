@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert, OneToMany, Index } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { PO } from "./po.entity";
 import { AuditTrail } from "./audit-trail.entity";
@@ -15,6 +15,7 @@ export class User {
     @Column()
     lastName: string;
 
+    @Index({ unique: true })
     @Column()
     user: string;
 

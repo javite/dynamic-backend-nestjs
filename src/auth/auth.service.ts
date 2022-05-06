@@ -7,12 +7,13 @@ import { LoginUserDto } from './../users/dto/login-user.dto';
 import { InfoUserDto } from './../users/dto/info-user.dto';
 import { JwtPayload } from './../interfaces/payload.interface';
 import { JwtService } from '@nestjs/jwt';
-
+import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private auditTrailService: AuditTrailService
   ) {}
 
   async register(userDto: CreateUserDto, userLoggued: any): Promise<RegistrationStatus> {
@@ -38,11 +39,19 @@ export class AuthService {
     const user = await this.usersService.findByLogin(loginUserDto);
     // generate and sign token
     const token = this._createToken(user);
+    this.auditTrailService.auditLogEvent(5, 3, undefined , user , undefined);
 
     return {
       user: user,
       ...token,
     };
+  }
+
+  async logout(loggedUser): Promise<boolean> {
+    console.log(loggedUser)
+    this.auditTrailService.auditLogEvent(6, 3, undefined , loggedUser , undefined);
+
+    return true;
   }
 
   async validateUser(payload: JwtPayload): Promise<InfoUserDto> {

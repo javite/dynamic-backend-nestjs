@@ -26,7 +26,7 @@ export class UsersService {
     const _user: User = this.usersRepository.create({ user, password, firstName, lastName, level, groupLevel });
     const userCreated = await this.usersRepository.save(_user);
     if(userCreated){
-      this.auditTrailService.auditLogEvent(1, 4, this.buildUserName(userCreated), userLogged, undefined, undefined);
+      this.auditTrailService.auditLogEvent(1, 3, this.buildUserName(userCreated), userLogged, undefined, undefined);
     }
     return this.toUserDto(userCreated);
   }
@@ -54,10 +54,11 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
+   
     await this.usersRepository.update(id, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(id);
     if(updatedUser){
-      this.auditTrailService.auditLogDifference(4, user, updatedUser, userLoggued, undefined);
+      this.auditTrailService.auditLogDifference(3, user, updatedUser, userLoggued, undefined);
     }
     delete updatedUser.password;
     delete updatedUser.token;
@@ -69,8 +70,11 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
-    this.auditTrailService.auditLogEvent(2, 4, this.buildUserName(user), userLoggued, undefined);
-    return this.usersRepository.softDelete(id);
+    const deletedUser = await this.usersRepository.softDelete(id);
+    if(deletedUser){
+      this.auditTrailService.auditLogEvent(2, 3, this.buildUserName(user), userLoggued, undefined);
+    }
+    return deletedUser;
   }
 
   async findByLogin({ user, password }: LoginUserDto): Promise<InfoUserDto> {    
@@ -92,7 +96,6 @@ export class UsersService {
   toUserDto(_user: User): InfoUserDto {  
     const { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, deletedAt, createdAt, updatedAt, erased } = _user;
     let userDto: InfoUserDto = { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, erased, deletedAt, createdAt, updatedAt };
-    // { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, erased, deletedAt, createdAt, updatedAt };
     return userDto;
   };
 

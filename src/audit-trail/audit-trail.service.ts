@@ -40,8 +40,11 @@ export class AuditTrailService {
   }
 
   async findAll() {
-    const log = await this.auditTrailRepository.find();
-    return log;
+    const logs = await this.auditTrailRepository.find({relations: ['user']});
+    const losgC = logs.map(log => {
+      return {...log, user: this.buildUserName(log.user)}
+    });
+    return losgC;
   }
 
   async findOne(id: number) {
@@ -58,6 +61,8 @@ export class AuditTrailService {
   }
 
   public auditLogDifference(object: number, previousValue: any, newValue: any, user: any, batch: any){
+    delete previousValue.updatedAt;
+    delete newValue.updatedAt;
     const difference = diff(JSON.parse(JSON.stringify(previousValue)), JSON.parse(JSON.stringify(newValue)));
     if(difference === undefined) return;
     let differenceArray = JSON.parse(JSON.stringify(difference));
@@ -78,19 +83,23 @@ export class AuditTrailService {
     })
   }
 
-  public auditLogEvent(eventType: number, object: number, name: any, user: any, batch: any = undefined, file?:any){
+  public auditLogEvent(eventType: number, object: number, newValue: any = undefined, user: any, batch: any = undefined, file?:any){
     let audit = new CreateAuditTrailDto();
     audit.eventType = eventType;
     audit.object = object;
-    audit.fieldName = 'nombre';
-    audit.newValue = name;
+    audit.newValue = newValue != undefined ? newValue : '-' ;
     audit.previousValue = '-';
+    audit.fieldName = newValue != undefined ? 'nombre' : '-';
     audit.userId = user.id;
     audit.batchId = batch != undefined ? batch.id :undefined;
-    if(eventType === 1 && file != undefined){ //0: modify, 1: new, 2: delete, 3: open, 4: close
+    if(eventType === 1 && file != undefined){ //0: modify, 1: new, 2: delete, 3: open, 4: close, 5: login, 6: logout
       audit.file = JSON.stringify(file);
     }
     this.create(audit);
+  }
+
+  buildUserName(user: User){
+    return user.firstName + ' ' + user.lastName + ' - (' + user.user + ')';
   }
 
 }

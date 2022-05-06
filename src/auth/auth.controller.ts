@@ -26,6 +26,13 @@ import { AuthGuard } from '@nestjs/passport';
     public async login(@Body() loginUserDto: LoginUserDto, @Req() req: any): Promise<LoginStatus> {
       return await this.authService.login(loginUserDto);
     }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('logout')
+    public async logout(@Req() req: any): Promise<boolean> {
+      const userLogged = req.user;
+      return await this.authService.logout(userLogged);
+    }
   
     @Get('whoami')
     @UseGuards(AuthGuard())
