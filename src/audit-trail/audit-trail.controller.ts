@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AuditTrailService } from './audit-trail.service';
 import { CreateAuditTrailDto } from './dto/create-audit-trail.dto';
 import { UpdateAuditTrailDto } from './dto/update-audit-trail.dto';
@@ -13,8 +13,8 @@ export class AuditTrailController {
   }
 
   @Get()
-  findAll() {
-    return this.auditTrailService.findAll();
+  findAll(@Query() query) {
+    return this.auditTrailService.findAll(query.skip, query.take);
   }
 
   @Get(':id')

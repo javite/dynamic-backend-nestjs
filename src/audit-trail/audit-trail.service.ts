@@ -39,12 +39,20 @@ export class AuditTrailService {
     return log;  
   }
 
-  async findAll() {
-    const logs = await this.auditTrailRepository.find({relations: ['user']});
+  async findAll(skip: number = 0, take: number = 10) {
+    const logs = await this.auditTrailRepository
+      .createQueryBuilder('auditTrail')
+      .innerJoinAndSelect('auditTrail.user', 'user')
+      .orderBy('auditTrail.createdAt', 'DESC')
+      .skip(skip)
+      .take(take)
+      .getMany();
+    
     const losgC = logs.map(log => {
       return {...log, user: this.buildUserName(log.user)}
     });
     return losgC;
+
   }
 
   async findOne(id: number) {
