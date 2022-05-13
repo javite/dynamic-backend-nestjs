@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1652482779591,
+  "timestamp": 1652483477549,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -268,7 +268,7 @@
     "/polyfills.js": "8877986d31c678c74e3bd98ec73903db82e8b60d",
     "/runtime.js": "7dcbfc072130461edc039c62aaf69ef2c482ef66",
     "/src_app_configuration_auth-constants_ts-src_app_pages_login_login_module_ts.js": "389a8fe9a969e0f87e2d516c43d615bd0c9111e6",
-    "/src_app_pages_audit-trail_audit-trail_module_ts.js": "fed3636df5d627a1e9f2f77f5ccde6867d4daa95",
+    "/src_app_pages_audit-trail_audit-trail_module_ts.js": "0b0963610a13351d0b604045838aae72bd5bd0e4",
     "/src_app_pages_configuration_configuration_module_ts.js": "7fce88281a0555c154f5ebcebf8b77b5d5293eba",
     "/src_app_pages_home_home_module_ts.js": "02defad25719d219f015b0ae5127d0723e03bb9f",
     "/src_app_pages_product-detail_product-detail_module_ts.js": "276f9bf3cc0cf88cc96357a00da8133f6cc7050f",
