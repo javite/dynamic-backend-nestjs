@@ -711,8 +711,8 @@ let HttpService = class HttpService {
             .delete(url, options)
             .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
     }
-    getAuditTrail(token) {
-        const url = this.uri + `audit-trail`;
+    getAuditTrail(token, skip, take) {
+        const url = this.uri + `audit-trail?skip=${skip}&take=${take}`;
         const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
