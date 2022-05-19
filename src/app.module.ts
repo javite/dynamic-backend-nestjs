@@ -13,6 +13,8 @@ import { PosModule } from './pos/pos.module';
 import { BatchesModule } from './batches/batches.module';
 import { UnitsModule } from './units/units.module';
 import { AuditTrailModule } from './audit-trail/audit-trail.module';
+import { WarningsModule } from './warnings/warnings.module';
+import { MachineStateModule } from './machine-state/machine-state.module';
 @Module({
   imports: [
     UsersModule, 
@@ -34,7 +36,7 @@ import { AuditTrailModule } from './audit-trail/audit-trail.module';
     }), 
     ConfigModule.forRoot({
       isGlobal: true,
-    }), PosModule, BatchesModule, UnitsModule, AuditTrailModule],
+    }), PosModule, BatchesModule, UnitsModule, AuditTrailModule, WarningsModule, MachineStateModule],
   controllers: [AppController],
   providers: [AppService],
 })

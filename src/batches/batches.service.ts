@@ -76,7 +76,7 @@ export class BatchesService {
       throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
     }
     this.auditTrailService.auditLogEvent(2, 2, batch.name, user, batch);
-    return this.batchRepository.delete(id);
+    return this.batchRepository.softDelete(id);
   }
 
   async close(po: number, user: any): Promise<boolean> {
