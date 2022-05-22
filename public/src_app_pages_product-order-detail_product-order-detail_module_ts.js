@@ -95,14 +95,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ProductOrderDetailPage": () => (/* binding */ ProductOrderDetailPage)
 /* harmony export */ });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! tslib */ 4762);
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! tslib */ 4762);
 /* harmony import */ var _raw_loader_product_order_detail_page_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !raw-loader!./product-order-detail.page.html */ 2407);
 /* harmony import */ var _product_order_detail_page_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./product-order-detail.page.scss */ 8625);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/core */ 7716);
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ 9895);
-/* harmony import */ var _ionic_angular__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ionic/angular */ 476);
-/* harmony import */ var src_app_services_http_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/services/http.service */ 6858);
-/* harmony import */ var src_app_services_storage_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/services/storage.service */ 1188);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/core */ 7716);
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ 9895);
+/* harmony import */ var _ionic_angular__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ionic/angular */ 476);
+/* harmony import */ var src_app_configuration_auth_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/configuration/auth-constants */ 4091);
+/* harmony import */ var src_app_services_http_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/services/http.service */ 6858);
+/* harmony import */ var src_app_services_storage_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/services/storage.service */ 1188);
+
 
 
 
@@ -174,9 +176,9 @@ let ProductOrderDetailPage = class ProductOrderDetailPage {
             this.new = true;
         }
         console.log("new Po:", this.new);
-        // this.storageService.get(AuthConstants.USER).then(res=>{
-        //   this.user = res.user;
-        // });
+        this.storageService.get(src_app_configuration_auth_constants__WEBPACK_IMPORTED_MODULE_2__.AuthConstants.USER).then(res => {
+            this.user = res.user;
+        });
         if (this.new) {
             this.po = this.po_init;
             this.edit = true;
@@ -204,15 +206,15 @@ let ProductOrderDetailPage = class ProductOrderDetailPage {
     }
 };
 ProductOrderDetailPage.ctorParameters = () => [
-    { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__.Router },
-    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_5__.ToastController },
-    { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__.ActivatedRoute },
-    { type: src_app_services_http_service__WEBPACK_IMPORTED_MODULE_2__.HttpService },
-    { type: src_app_services_storage_service__WEBPACK_IMPORTED_MODULE_3__.StorageService },
-    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_5__.NavController }
+    { type: _angular_router__WEBPACK_IMPORTED_MODULE_5__.Router },
+    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_6__.ToastController },
+    { type: _angular_router__WEBPACK_IMPORTED_MODULE_5__.ActivatedRoute },
+    { type: src_app_services_http_service__WEBPACK_IMPORTED_MODULE_3__.HttpService },
+    { type: src_app_services_storage_service__WEBPACK_IMPORTED_MODULE_4__.StorageService },
+    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_6__.NavController }
 ];
-ProductOrderDetailPage = (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__decorate)([
-    (0,_angular_core__WEBPACK_IMPORTED_MODULE_7__.Component)({
+ProductOrderDetailPage = (0,tslib__WEBPACK_IMPORTED_MODULE_7__.__decorate)([
+    (0,_angular_core__WEBPACK_IMPORTED_MODULE_8__.Component)({
         selector: 'app-product-order-detail',
         template: _raw_loader_product_order_detail_page_html__WEBPACK_IMPORTED_MODULE_0__.default,
         styles: [_product_order_detail_page_scss__WEBPACK_IMPORTED_MODULE_1__.default]

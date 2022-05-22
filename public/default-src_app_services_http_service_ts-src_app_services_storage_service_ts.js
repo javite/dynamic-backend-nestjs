@@ -471,6 +471,106 @@ const Storage = (0,_capacitor_core__WEBPACK_IMPORTED_MODULE_0__.registerPlugin)(
 
 /***/ }),
 
+/***/ 134:
+/*!******************************************************************!*\
+  !*** ./node_modules/rxjs/_esm2015/internal/operators/timeout.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "timeout": () => (/* binding */ timeout)
+/* harmony export */ });
+/* harmony import */ var _scheduler_async__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../scheduler/async */ 3637);
+/* harmony import */ var _util_TimeoutError__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../util/TimeoutError */ 5587);
+/* harmony import */ var _timeoutWith__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./timeoutWith */ 9401);
+/* harmony import */ var _observable_throwError__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../observable/throwError */ 205);
+
+
+
+
+function timeout(due, scheduler = _scheduler_async__WEBPACK_IMPORTED_MODULE_0__.async) {
+    return (0,_timeoutWith__WEBPACK_IMPORTED_MODULE_1__.timeoutWith)(due, (0,_observable_throwError__WEBPACK_IMPORTED_MODULE_2__.throwError)(new _util_TimeoutError__WEBPACK_IMPORTED_MODULE_3__.TimeoutError()), scheduler);
+}
+//# sourceMappingURL=timeout.js.map
+
+/***/ }),
+
+/***/ 9401:
+/*!**********************************************************************!*\
+  !*** ./node_modules/rxjs/_esm2015/internal/operators/timeoutWith.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "timeoutWith": () => (/* binding */ timeoutWith)
+/* harmony export */ });
+/* harmony import */ var _scheduler_async__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../scheduler/async */ 3637);
+/* harmony import */ var _util_isDate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/isDate */ 9989);
+/* harmony import */ var _innerSubscribe__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../innerSubscribe */ 5345);
+
+
+
+function timeoutWith(due, withObservable, scheduler = _scheduler_async__WEBPACK_IMPORTED_MODULE_0__.async) {
+    return (source) => {
+        let absoluteTimeout = (0,_util_isDate__WEBPACK_IMPORTED_MODULE_1__.isDate)(due);
+        let waitFor = absoluteTimeout ? (+due - scheduler.now()) : Math.abs(due);
+        return source.lift(new TimeoutWithOperator(waitFor, absoluteTimeout, withObservable, scheduler));
+    };
+}
+class TimeoutWithOperator {
+    constructor(waitFor, absoluteTimeout, withObservable, scheduler) {
+        this.waitFor = waitFor;
+        this.absoluteTimeout = absoluteTimeout;
+        this.withObservable = withObservable;
+        this.scheduler = scheduler;
+    }
+    call(subscriber, source) {
+        return source.subscribe(new TimeoutWithSubscriber(subscriber, this.absoluteTimeout, this.waitFor, this.withObservable, this.scheduler));
+    }
+}
+class TimeoutWithSubscriber extends _innerSubscribe__WEBPACK_IMPORTED_MODULE_2__.SimpleOuterSubscriber {
+    constructor(destination, absoluteTimeout, waitFor, withObservable, scheduler) {
+        super(destination);
+        this.absoluteTimeout = absoluteTimeout;
+        this.waitFor = waitFor;
+        this.withObservable = withObservable;
+        this.scheduler = scheduler;
+        this.scheduleTimeout();
+    }
+    static dispatchTimeout(subscriber) {
+        const { withObservable } = subscriber;
+        subscriber._unsubscribeAndRecycle();
+        subscriber.add((0,_innerSubscribe__WEBPACK_IMPORTED_MODULE_2__.innerSubscribe)(withObservable, new _innerSubscribe__WEBPACK_IMPORTED_MODULE_2__.SimpleInnerSubscriber(subscriber)));
+    }
+    scheduleTimeout() {
+        const { action } = this;
+        if (action) {
+            this.action = action.schedule(this, this.waitFor);
+        }
+        else {
+            this.add(this.action = this.scheduler.schedule(TimeoutWithSubscriber.dispatchTimeout, this.waitFor, this));
+        }
+    }
+    _next(value) {
+        if (!this.absoluteTimeout) {
+            this.scheduleTimeout();
+        }
+        super._next(value);
+    }
+    _unsubscribe() {
+        this.action = undefined;
+        this.scheduler = null;
+        this.withObservable = null;
+    }
+}
+//# sourceMappingURL=timeoutWith.js.map
+
+/***/ }),
+
 /***/ 5587:
 /*!******************************************************************!*\
   !*** ./node_modules/rxjs/_esm2015/internal/util/TimeoutError.js ***!
@@ -530,13 +630,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "HttpService": () => (/* binding */ HttpService)
 /* harmony export */ });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! tslib */ 4762);
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ 1841);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/core */ 7716);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 5587);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs */ 205);
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ 5304);
-/* harmony import */ var _ionic_angular__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ionic/angular */ 476);
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! tslib */ 4762);
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ 1841);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/core */ 7716);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs */ 5587);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs */ 205);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ 134);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ 5304);
+/* harmony import */ var _ionic_angular__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ionic/angular */ 476);
 /* harmony import */ var _configuration_enviroment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../configuration/enviroment */ 3685);
 
 
@@ -545,6 +646,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const RESPONSE_TIMEOUT = 3000;
 let HttpService = class HttpService {
     constructor(http, platform) {
         this.http = http;
@@ -567,233 +669,233 @@ let HttpService = class HttpService {
         const url = this.uri + serviceName;
         return this.http
             .post(url, data)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     logOut(token) {
         const url = this.uri + 'auth/logout';
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         return this.http
             .post(url, undefined, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getActivePO() {
         const url = this.uri + 'pos/open';
         console.log(url);
         return this.http
             .get(url)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getPOs() {
         const url = this.uri + `pos`;
         console.log(url);
         return this.http
             .get(url)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getPOState(state) {
         const url = this.uri + `pos/state/${state}`;
         console.log(url);
         return this.http
             .get(url)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getPO(id) {
         const url = this.uri + `pos/${id}`;
         console.log(url);
         return this.http
             .get(url)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     createPO(po, token) {
         const url = this.uri + `pos`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .post(url, po, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     updatePO(po, token) {
         const url = this.uri + `pos/${po.id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .patch(url, po, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     closePO(id, token) {
         let body = { "id": id };
         const url = this.uri + `pos/close/${id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .post(url, body, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     openPO(id, token) {
         let body = { "id": id };
         const url = this.uri + `pos/open/${id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .post(url, body, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     deletePO(id, token) {
         const url = this.uri + `pos/${id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .delete(url, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getProducts() {
         const url = this.uri + `products`;
         console.log(url);
         return this.http
             .get(url)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getProduct(id) {
         const url = this.uri + `products/${id}`;
         console.log(url);
         return this.http
             .get(url)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     createProduct(product, token) {
         const url = this.uri + `products`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .post(url, product, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     updateProduct(product, token) {
         const url = this.uri + `products/${product.id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .patch(url, product, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     deleteProduct(id, token) {
         const url = this.uri + `products/${id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .delete(url, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getAuditTrail(token, skip, take) {
         const url = this.uri + `audit-trail?skip=${skip}&take=${take}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .get(url, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getUsers(token) {
         const url = this.uri + `users`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .get(url, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getUser(id, token) {
         const url = this.uri + `users/${id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .get(url, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     createUser(user, token) {
         const url = this.uri + `auth/register`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .post(url, user, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     ;
     updateUser(user, token) {
         const url = this.uri + `users/${user.id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .patch(url, user, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     ;
     deleteUser(id, token) {
         const url = this.uri + `users/${id}`;
-        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpHeaders({
             Authorization: `Bearer ${token}`
         });
         const options = { headers: headers };
         console.log(url);
         return this.http
             .delete(url, options)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     getUnitListAndStats(units, batchId) {
         const url = this.uri + `units/list/stats/${units}/${batchId}`;
         console.log(url);
         return this.http
             .get(url)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.catchError)(this.handleError));
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.timeout)(RESPONSE_TIMEOUT), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(this.handleError));
     }
     handleError(error) {
         let errorMsg;
-        if (error instanceof rxjs__WEBPACK_IMPORTED_MODULE_3__.TimeoutError) {
-            return (0,rxjs__WEBPACK_IMPORTED_MODULE_4__.throwError)('El servicio de backend no responde. Verifique su conexión.');
+        if (error instanceof rxjs__WEBPACK_IMPORTED_MODULE_4__.TimeoutError) {
+            return (0,rxjs__WEBPACK_IMPORTED_MODULE_5__.throwError)('El servicio de backend no responde. Verifique su conexión.');
         }
         if (error.error instanceof ErrorEvent) {
             // A client-side or network error occurred. Handle it accordingly.
-            console.error('Error cliente:', error.error.message);
+            console.log('Error cliente:', error.error.message);
             errorMsg = `Error:' ${error.error.message}`;
         }
         else {
@@ -833,15 +935,15 @@ let HttpService = class HttpService {
             console.log(`Backend returned code ${error.status}, ` + `body was: ${error.error.message}`);
         }
         // Return an observable with a user-facing error message.
-        return (0,rxjs__WEBPACK_IMPORTED_MODULE_4__.throwError)(errorMsg);
+        return (0,rxjs__WEBPACK_IMPORTED_MODULE_5__.throwError)(errorMsg);
     }
 };
 HttpService.ctorParameters = () => [
-    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpClient },
-    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_5__.Platform }
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpClient },
+    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_6__.Platform }
 ];
-HttpService = (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__decorate)([
-    (0,_angular_core__WEBPACK_IMPORTED_MODULE_7__.Injectable)({
+HttpService = (0,tslib__WEBPACK_IMPORTED_MODULE_7__.__decorate)([
+    (0,_angular_core__WEBPACK_IMPORTED_MODULE_8__.Injectable)({
         providedIn: 'root'
     })
 ], HttpService);

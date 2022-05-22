@@ -154,15 +154,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ProductOrdersPage": () => (/* binding */ ProductOrdersPage)
 /* harmony export */ });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! tslib */ 4762);
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! tslib */ 4762);
 /* harmony import */ var _raw_loader_product_orders_page_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !raw-loader!./product-orders.page.html */ 9238);
 /* harmony import */ var _product_orders_page_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./product-orders.page.scss */ 9691);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/core */ 7716);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ 9895);
 /* harmony import */ var _ionic_angular__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ionic/angular */ 476);
 /* harmony import */ var src_app_services_http_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/services/http.service */ 6858);
-/* harmony import */ var src_app_services_storage_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/services/storage.service */ 1188);
-
 
 
 
@@ -171,11 +169,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 let ProductOrdersPage = class ProductOrdersPage {
-    constructor(router, toastController, httpClient, storageService) {
+    constructor(router, toastController, httpClient, alertController, loadingController) {
         this.router = router;
         this.toastController = toastController;
         this.httpClient = httpClient;
-        this.storageService = storageService;
+        this.alertController = alertController;
+        this.loadingController = loadingController;
         this.ops = {
             slidesPerView: 1,
             spaceBetween: 0,
@@ -191,6 +190,7 @@ let ProductOrdersPage = class ProductOrdersPage {
         this.new = false;
     }
     ngOnInit() {
+        this.presentLoading();
     }
     ionViewWillEnter() {
         this.httpClient.getPOs()
@@ -201,7 +201,12 @@ let ProductOrdersPage = class ProductOrdersPage {
             this.pos2 = po.filter(po => po.state === 2);
             console.log(this.po, this.pos0, this.pos2);
             this.data_loaded = true;
-        }, error => console.log(error));
+            this.stopLoading();
+        }, error => {
+            console.log(error);
+            this.stopLoading();
+            this.showAlertOneButton(error);
+        });
     }
     segmentChanged(event) {
         let key = event.detail.value;
@@ -245,6 +250,36 @@ let ProductOrdersPage = class ProductOrdersPage {
             this.slider.slideTo(swiper.clickedIndex);
         });
     }
+    showAlertOneButton(msg) {
+        return (0,tslib__WEBPACK_IMPORTED_MODULE_3__.__awaiter)(this, void 0, void 0, function* () {
+            const alert = yield this.alertController.create({
+                header: 'Atención!',
+                message: msg,
+                buttons: [
+                    {
+                        text: 'OK',
+                        handler: () => { }
+                    }
+                ]
+            });
+            yield alert.present();
+        });
+    }
+    presentLoading() {
+        return (0,tslib__WEBPACK_IMPORTED_MODULE_3__.__awaiter)(this, void 0, void 0, function* () {
+            this.loading = yield this.loadingController.create({
+                message: 'Aguarde por favor',
+                duration: 3000
+            });
+            yield this.loading.present();
+            // const { role, data } = await loading.onDidDismiss();
+        });
+    }
+    stopLoading() {
+        return (0,tslib__WEBPACK_IMPORTED_MODULE_3__.__awaiter)(this, void 0, void 0, function* () {
+            this.loading.dismiss();
+        });
+    }
     goBack() {
         this.router.navigate(['home']);
     }
@@ -258,12 +293,13 @@ ProductOrdersPage.ctorParameters = () => [
     { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__.Router },
     { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_5__.ToastController },
     { type: src_app_services_http_service__WEBPACK_IMPORTED_MODULE_2__.HttpService },
-    { type: src_app_services_storage_service__WEBPACK_IMPORTED_MODULE_3__.StorageService }
+    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_5__.AlertController },
+    { type: _ionic_angular__WEBPACK_IMPORTED_MODULE_5__.LoadingController }
 ];
 ProductOrdersPage.propDecorators = {
     slider: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_6__.ViewChild, args: ['slider', { static: false },] }]
 };
-ProductOrdersPage = (0,tslib__WEBPACK_IMPORTED_MODULE_7__.__decorate)([
+ProductOrdersPage = (0,tslib__WEBPACK_IMPORTED_MODULE_3__.__decorate)([
     (0,_angular_core__WEBPACK_IMPORTED_MODULE_6__.Component)({
         selector: 'app-product-orders',
         template: _raw_loader_product_orders_page_html__WEBPACK_IMPORTED_MODULE_0__.default,
