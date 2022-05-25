@@ -15,6 +15,7 @@ import { UnitsModule } from './units/units.module';
 import { AuditTrailModule } from './audit-trail/audit-trail.module';
 import { WarningsModule } from './warnings/warnings.module';
 import { MachineStateModule } from './machine-state/machine-state.module';
+import { ConfigurationsModule } from './configurations/configurations.module';
 @Module({
   imports: [
     UsersModule, 
@@ -36,7 +37,7 @@ import { MachineStateModule } from './machine-state/machine-state.module';
     }), 
     ConfigModule.forRoot({
       isGlobal: true,
-    }), PosModule, BatchesModule, UnitsModule, AuditTrailModule, WarningsModule, MachineStateModule],
+    }), PosModule, BatchesModule, UnitsModule, AuditTrailModule, WarningsModule, MachineStateModule, ConfigurationsModule],
   controllers: [AppController],
   providers: [AppService],
 })
