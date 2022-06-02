@@ -1,9 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
 import * as fs from 'fs/promises';
+import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 
 @Injectable()
 export class ConfigurationsService {
+  constructor(
+    private auditTrailService: AuditTrailService
+  ) {}
+
   path = 'K:/Mi unidad/01 - Proyectos/27 - Balanzas/Software/vulcano/Data/configuration.ini';
 
   async findAll() {
@@ -11,7 +16,6 @@ export class ConfigurationsService {
     try {
       const data = await fs.readFile(this.path, 'utf8');     
       jsonData = JSON.parse(data)
-      console.log(jsonData);
       return jsonData;
     } catch (error) {
       console.log(error);
@@ -21,9 +25,12 @@ export class ConfigurationsService {
 
   async update(updateConfigurationDto: UpdateConfigurationDto, user: any) {
     try {
+      const previousConfig = await this.findAll();
       const frameworksData = JSON.stringify(updateConfigurationDto);
-      const jsonPretty = JSON.stringify(JSON.parse(frameworksData),null,2); //for prettify  
+      const jsonPretty = JSON.stringify(JSON.parse(frameworksData),null,2); //for prettify
+
       await fs.writeFile(this.path, jsonPretty, 'utf-8');
+      this.auditTrailService.auditLogDifference(4, previousConfig, updateConfigurationDto, user, undefined);
       return true;
     } catch (error) { 
       console.log(error);

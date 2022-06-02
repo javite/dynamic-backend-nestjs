@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { flatten, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
 import { Batch } from 'src/database/entities/batch.entity';
@@ -22,15 +22,18 @@ export class AuditTrailService {
 
   async create(createAuditTrailDto: CreateAuditTrailDto): Promise<AuditTrail> {
     let batchInDb = undefined;
-    if(createAuditTrailDto.batchId != undefined){
+    let userInDb = undefined;
+    if(createAuditTrailDto.batchId){
       batchInDb = await this.batchRepository.findOne(createAuditTrailDto.batchId); 
       if (!batchInDb) {
           throw new HttpException('El Lote no existe', HttpStatus.BAD_REQUEST);    
       }
     }
-    const userInDb = await this.usersRepository.findOne(createAuditTrailDto.userId); // check if the user exists in the db    
-    if (!userInDb) {
-        throw new HttpException('El Usuario no existe', HttpStatus.BAD_REQUEST);    
+    if(createAuditTrailDto.userId){
+      userInDb = await this.usersRepository.findOne(createAuditTrailDto.userId); // check if the user exists in the db    
+      if (!userInDb) {
+          throw new HttpException('El Usuario no existe', HttpStatus.BAD_REQUEST);    
+      }
     }
     const newLog = this.auditTrailRepository.create(createAuditTrailDto);
     newLog.batch = batchInDb;
@@ -42,7 +45,7 @@ export class AuditTrailService {
   async findAll(skip: number = 0, take: number = 10) {
     const logs = await this.auditTrailRepository
       .createQueryBuilder('auditTrail')
-      .innerJoinAndSelect('auditTrail.user', 'user')
+      .leftJoinAndSelect('auditTrail.user', 'user')
       .orderBy('auditTrail.createdAt', 'DESC')
       .skip(skip)
       .take(take)
@@ -71,6 +74,7 @@ export class AuditTrailService {
   public auditLogDifference(object: number, previousValue: any, newValue: any, user: any, batch: any){
     delete previousValue.updatedAt;
     delete newValue.updatedAt;
+    const isArray = newValue?.length ? true : false ;
     const difference = diff(JSON.parse(JSON.stringify(previousValue)), JSON.parse(JSON.stringify(newValue)));
     if(difference === undefined) return;
     let differenceArray = JSON.parse(JSON.stringify(difference));
@@ -79,9 +83,9 @@ export class AuditTrailService {
         let audit = new CreateAuditTrailDto();
         audit.eventType = 0;
         audit.object = object;
-        audit.fieldName = dif.path[0];
-        audit.previousValue= dif.lhs;
-        audit.newValue = dif.rhs;
+        audit.fieldName = isArray ? previousValue[dif.path[0]].name : dif.path[0];
+        audit.previousValue= dif.lhs.toString();
+        audit.newValue = dif.rhs.toString();
         audit.userId = user.id;
         if(batch != undefined){
           audit.batchId = batch.id;
@@ -107,7 +111,7 @@ export class AuditTrailService {
   }
 
   buildUserName(user: User){
-    return user.firstName + ' ' + user.lastName + ' - (' + user.user + ')';
+    return user ? (user.firstName + ' ' + user.lastName + ' - (' + user.user + ')') : '-';
   }
 
 }
