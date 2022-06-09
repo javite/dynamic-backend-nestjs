@@ -7,10 +7,11 @@ import { User } from 'src/database/entities/user.entity';
 import { Batch } from 'src/database/entities/batch.entity';
 import { Product } from 'src/database/entities/product.entity';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports:  [TypeOrmModule.forFeature([User, Batch, Product, AuditTrail])],
   controllers: [AuditTrailController],
-  providers: [AuditTrailService]
+  providers: [AuditTrailService, UsersService]
 })
 export class AuditTrailModule {}

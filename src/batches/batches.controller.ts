@@ -1,15 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, HttpException, HttpStatus } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
+import { Role } from 'src/enums/role.enum';
 
 @Controller('batches')
 export class BatchesController {
-  constructor(private readonly batchesService: BatchesService) {}
+  constructor(
+    private readonly batchesService: BatchesService,
+    private readonly usersService: UsersService
+    ) {}
 
   @Post()
-  create(@Body() createBatchDto: CreateBatchDto) {
-    return this.batchesService.create(createBatchDto);
+  create(@Request() req: any, @Body() createBatchDto: CreateBatchDto) {
+    const user = req.user;
+    if(this.usersService.validateUserAccess(user, [Role.Admin, Role.Maintenance, Role.Supervisor])){
+      return this.batchesService.create(createBatchDto);      
+    } else {
+      throw new HttpException("No tiene nivel suficiente", HttpStatus.FORBIDDEN);
+    }
   }
 
   @Get()
@@ -23,12 +33,22 @@ export class BatchesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
-    return this.batchesService.update(+id, updateBatchDto, null);
+  update(@Request() req: any, @Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
+    const user = req.user;
+    if(this.usersService.validateUserAccess(user, [Role.Admin, Role.Maintenance, Role.Supervisor])){
+      return this.batchesService.update(+id, updateBatchDto, null);  
+    } else {
+      throw new HttpException("No tiene nivel suficiente", HttpStatus.FORBIDDEN);
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.batchesService.remove(+id, null);
+  remove(@Request() req: any, @Param('id') id: string) {
+    const user = req.user;
+    if(this.usersService.validateUserAccess(user, [Role.Admin, Role.Maintenance, Role.Supervisor])){
+      return this.batchesService.remove(+id, null); 
+    } else {
+      throw new HttpException("No tiene nivel suficiente", HttpStatus.FORBIDDEN);
+    }
   }
 }

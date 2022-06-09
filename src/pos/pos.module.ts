@@ -11,10 +11,11 @@ import { BatchesService } from 'src/batches/batches.service';
 import { ProductsService } from 'src/products/products.service';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports:  [TypeOrmModule.forFeature([PO, User, Product, Batch, Unit, AuditTrail])],
   controllers: [PosController],
-  providers: [PosService, BatchesService, ProductsService, AuditTrailService]
+  providers: [PosService, BatchesService, ProductsService, AuditTrailService, UsersService]
 })
 export class PosModule {}

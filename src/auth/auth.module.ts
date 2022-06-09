@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
 import { Batch } from 'src/database/entities/batch.entity';
 import { User } from 'src/database/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 @Module({
     imports: [    
         UsersModule,    

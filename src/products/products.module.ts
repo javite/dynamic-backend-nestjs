@@ -7,9 +7,11 @@ import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
 import { Batch } from 'src/database/entities/batch.entity';
 import { User } from 'src/database/entities/user.entity';
+import { AuthModule } from 'src/auth/auth.module';
+import { UsersService } from 'src/users/users.service';
 @Module({
-  imports:  [TypeOrmModule.forFeature([Product, Batch, User, AuditTrail])],
+  imports:  [TypeOrmModule.forFeature([Product, Batch, User, AuditTrail]), AuthModule],
   controllers: [ProductsController],
-  providers: [ProductsService, AuditTrailService]
+  providers: [ProductsService, AuditTrailService, UsersService]
 })
 export class ProductsModule {}

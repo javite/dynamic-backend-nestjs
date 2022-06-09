@@ -1,11 +1,12 @@
-import { Controller, Body, Post, HttpException, HttpStatus, Request, Get, Req, UseGuards,} from '@nestjs/common';
+import { Controller, Body, Post, HttpException, HttpStatus, Request, Get, Req, UseGuards, Patch, Param,} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-  import { CreateUserDto } from './../users/dto/create-user.dto';
-  import { RegistrationStatus } from './../interfaces/registration-status.interface';
-  import { AuthService } from './auth.service';
-  import { LoginStatus } from '../interfaces/login-status.interface';
-  import { LoginUserDto } from './../users/dto/login-user.dto';
-  import { JwtPayload } from './../interfaces/payload.interface';
+import { CreateUserDto } from './../users/dto/create-user.dto';
+import { RegistrationStatus } from './../interfaces/registration-status.interface';
+import { AuthService } from './auth.service';
+import { LoginStatus } from '../interfaces/login-status.interface';
+import { LoginUserDto } from './../users/dto/login-user.dto';
+import { JwtPayload } from './../interfaces/payload.interface';
+import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
   
   @Controller('auth')
   export class AuthController {
@@ -23,7 +24,7 @@ import { AuthGuard } from '@nestjs/passport';
     }
   
     @Post('login')
-    public async login(@Body() loginUserDto: LoginUserDto, @Req() req: any): Promise<LoginStatus> {
+    public async login(@Body() loginUserDto: LoginUserDto): Promise<LoginStatus> {
       return await this.authService.login(loginUserDto);
     }
 
@@ -32,6 +33,13 @@ import { AuthGuard } from '@nestjs/passport';
     public async logout(@Req() req: any): Promise<boolean> {
       const userLogged = req.user;
       return await this.authService.logout(userLogged);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('change-password/:userId')
+    public async changePassword(@Req() req: any, @Body() changePasswordDto: ChangePasswordDto, @Param('userId') userId: string): Promise<boolean> {
+      const userLogged = req.user;
+      return await this.authService.changePassword(changePasswordDto, userId, userLogged);
     }
   
     @Get('whoami')

@@ -8,6 +8,8 @@ import { InfoUserDto } from './../users/dto/info-user.dto';
 import { JwtPayload } from './../interfaces/payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
+import { User } from 'src/database/entities/user.entity';
+import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -35,9 +37,7 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
-    // find user in db
     const user = await this.usersService.findByLogin(loginUserDto);
-    // generate and sign token
     const token = this._createToken(user);
     this.auditTrailService.auditLogEvent(5, 3, undefined , user , undefined);
 
@@ -48,10 +48,13 @@ export class AuthService {
   }
 
   async logout(loggedUser): Promise<boolean> {
-    console.log(loggedUser)
     this.auditTrailService.auditLogEvent(6, 3, undefined , loggedUser , undefined);
-
     return true;
+  }
+
+  async changePassword(changePasswordDto: ChangePasswordDto, userId: string, userLogged: any){
+    const res = await this.usersService.updatePassword(changePasswordDto.password, userId, userLogged);
+    return res;
   }
 
   async validateUser(payload: JwtPayload): Promise<InfoUserDto> {

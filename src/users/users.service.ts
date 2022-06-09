@@ -8,6 +8,7 @@ import { User } from './../database/entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { InfoUserDto } from './dto/info-user.dto';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -54,7 +55,7 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
     }
-   
+    delete updateUserDto.password;
     await this.usersRepository.update(id, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(id);
     if(updatedUser){
@@ -63,6 +64,22 @@ export class UsersService {
     delete updatedUser.password;
     delete updatedUser.token;
     return updatedUser;
+  }
+
+  async updatePassword(newPassword: string, userId: string, userLoggued: any) {
+    const user = await this.usersRepository.findOne(userId);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
+    }
+    let changePasswordDto = new ChangePasswordDto();
+    changePasswordDto.password = await bcrypt.hash(newPassword, 10);
+    await this.usersRepository.update(userId, changePasswordDto);
+    const updatedUser = await this.usersRepository.findOne(userId);
+    if(updatedUser){
+      this.auditTrailService.auditLogEvent(0, 3, '*******', userLoggued, undefined, undefined, 'password');
+      return true;
+    }
+    return false;
   }
 
   async remove(id: number, userLoggued: any): Promise<DeleteResult> {
@@ -93,9 +110,39 @@ export class UsersService {
     return await this.usersRepository.findOne({ where:  { user } });  
   }
 
+  validateUserAccess(user: User, roles: number[]): boolean {
+    return roles.some((role) => user.level === role)
+  }
+  
   toUserDto(_user: User): InfoUserDto {  
-    const { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, deletedAt, createdAt, updatedAt, erased } = _user;
-    let userDto: InfoUserDto = { id, firstName, lastName, user, level, groupLevel, passExpirationDate, active, erased, deletedAt, createdAt, updatedAt };
+    const {
+      id,
+      firstName,
+      lastName,
+      user,
+      level,
+      groupLevel,
+      passExpirationDate,
+      active,
+      deletedAt,
+      createdAt,
+      updatedAt,
+      erased,
+    } = _user;
+    let userDto: InfoUserDto = {
+      id,
+      firstName,
+      lastName,
+      user,
+      level,
+      groupLevel,
+      passExpirationDate,
+      active,
+      erased,
+      deletedAt,
+      createdAt,
+      updatedAt,
+    };
     return userDto;
   };
 

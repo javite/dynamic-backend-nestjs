@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Role } from 'src/enums/role.enum';
 
 
 @Controller('users')
@@ -12,39 +13,44 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  async create(@Request() req: any, @Body() createUserDto: CreateUserDto) {
+  create(@Request() req: any, @Body() createUserDto: CreateUserDto) {
     const userLoggued = req.user;
-    const user = await this.usersService.create(createUserDto, userLoggued);
-    return user;
+    if(this.usersService.validateUserAccess(userLoggued, [Role.Admin])){
+      return this.usersService.create(createUserDto, userLoggued); 
+    } else {
+      throw new HttpException("No tiene nivel suficiente", HttpStatus.FORBIDDEN);
+    }
   }
 
-  // @UseGuards(AuthGuard('jwt'))
   @Get()
-  async findAll() {
-    const users = await this.usersService.findAll();
-    return users;
+  findAll() {
+    return this.usersService.findAll();
   }
 
-  // @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const user = await this.usersService.findOne(+id); 
-    return user;
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  async update(@Request() req: any, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Request() req: any, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const userLoggued = req.user;
-    const user = await this.usersService.update(+id, updateUserDto, userLoggued);
-    return user;
+    if(this.usersService.validateUserAccess(userLoggued, [Role.Admin])){
+      return this.usersService.update(+id, updateUserDto, userLoggued);
+    } else {
+      throw new HttpException("No tiene nivel suficiente", HttpStatus.FORBIDDEN);
+    }
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  async remove(@Request() req: any, @Param('id') id: string) {
+  remove(@Request() req: any, @Param('id') id: string) {
     const userLoggued = req.user;
-    const user = await this.usersService.remove(+id, userLoggued);
-    return user;
+    if(this.usersService.validateUserAccess(userLoggued, [Role.Admin])){
+      return this.usersService.remove(+id, userLoggued);
+    } else {
+      throw new HttpException("No tiene nivel suficiente", HttpStatus.FORBIDDEN);
+    }
   }
 }

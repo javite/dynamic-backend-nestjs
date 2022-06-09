@@ -95,13 +95,13 @@ export class AuditTrailService {
     })
   }
 
-  public auditLogEvent(eventType: number, object: number, newValue: any = undefined, user: any, batch: any = undefined, file?:any){
+  public auditLogEvent(eventType: number, object: number, newValue: any = undefined, user: any, batch: any = undefined, file?:any, fieldName?: string){
     let audit = new CreateAuditTrailDto();
     audit.eventType = eventType;
     audit.object = object;
     audit.newValue = newValue != undefined ? newValue : '-' ;
     audit.previousValue = '-';
-    audit.fieldName = newValue != undefined ? 'nombre' : '-';
+    audit.fieldName = fieldName ?? '-';
     audit.userId = user.id;
     audit.batchId = batch != undefined ? batch.id :undefined;
     if(eventType === 1 && file != undefined){ //0: modify, 1: new, 2: delete, 3: open, 4: close, 5: login, 6: logout

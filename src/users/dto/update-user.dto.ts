@@ -15,4 +15,6 @@ export class UpdateUserDto {
     active: boolean;
     @IsNotEmpty()
     passExpirationDate: Date;
+    
+    password?: string;
 }

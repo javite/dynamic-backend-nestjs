@@ -16,11 +16,9 @@ import { AuditTrailModule } from './audit-trail/audit-trail.module';
 import { WarningsModule } from './warnings/warnings.module';
 import { MachineStateModule } from './machine-state/machine-state.module';
 import { ConfigurationsModule } from './configurations/configurations.module';
+import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
-    UsersModule, 
-    AuthModule,
-    ProductsModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -37,7 +35,17 @@ import { ConfigurationsModule } from './configurations/configurations.module';
     }), 
     ConfigModule.forRoot({
       isGlobal: true,
-    }), PosModule, BatchesModule, UnitsModule, AuditTrailModule, WarningsModule, MachineStateModule, ConfigurationsModule],
+    }), 
+    UsersModule, 
+    AuthModule,
+    ProductsModule,
+    PosModule, 
+    BatchesModule, 
+    UnitsModule, 
+    AuditTrailModule, 
+    WarningsModule, 
+    MachineStateModule, 
+    ConfigurationsModule],
   controllers: [AppController],
   providers: [AppService],
 })
