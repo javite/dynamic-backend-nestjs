@@ -6,7 +6,8 @@ import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 import { Product } from './../database/entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-
+import { EventType } from 'src/enums/event_type.enum';
+import { ObjectType } from 'src/enums/object_type.enum';
 @Injectable()
 export class ProductsService {
   constructor(
@@ -24,7 +25,7 @@ export class ProductsService {
     const product = this.productsRepository.create(createProductDto);
     const productCreated = await this.productsRepository.save(product);
     if(productCreated){
-      this.auditTrailService.auditLogEvent(1, 1, productCreated.name, user, undefined, productCreated);
+      this.auditTrailService.auditLogEvent(EventType.created, ObjectType.product, productCreated.name, user, undefined, productCreated);
     }
     return product;  
   }
@@ -50,7 +51,7 @@ export class ProductsService {
     await this.productsRepository.update(id, updateProductDto);
     const updatedProduct = await this.productsRepository.findOne(id);
     if(updatedProduct){
-      this.auditTrailService.auditLogDifference(1, product, updatedProduct, user, undefined);
+      this.auditTrailService.auditLogDifference(ObjectType.product, product, updatedProduct, user, undefined);
     }
 
     return updatedProduct;
@@ -61,7 +62,7 @@ export class ProductsService {
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.BAD_REQUEST);    
     }
-    this.auditTrailService.auditLogEvent(2, 1, product.name, user, undefined);
+    this.auditTrailService.auditLogEvent(EventType.deleted, ObjectType.product, product.name, user, undefined);
     return this.productsRepository.softDelete(id);
   }
 }

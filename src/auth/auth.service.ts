@@ -8,8 +8,9 @@ import { InfoUserDto } from './../users/dto/info-user.dto';
 import { JwtPayload } from './../interfaces/payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
-import { User } from 'src/database/entities/user.entity';
 import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
+import { EventType } from 'src/enums/event_type.enum';
+import { ObjectType } from 'src/enums/object_type.enum';
 @Injectable()
 export class AuthService {
   constructor(
@@ -39,7 +40,7 @@ export class AuthService {
   async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
     const user = await this.usersService.findByLogin(loginUserDto);
     const token = this._createToken(user);
-    this.auditTrailService.auditLogEvent(5, 3, undefined , user , undefined);
+    this.auditTrailService.auditLogEvent(EventType.login, ObjectType.user, undefined , user , undefined);
 
     return {
       user: user,
@@ -48,13 +49,19 @@ export class AuthService {
   }
 
   async logout(loggedUser): Promise<boolean> {
-    this.auditTrailService.auditLogEvent(6, 3, undefined , loggedUser , undefined);
+    this.auditTrailService.auditLogEvent(EventType.logout, ObjectType.user, undefined , loggedUser , undefined);
     return true;
   }
 
   async changePassword(changePasswordDto: ChangePasswordDto, userId: string, userLogged: any){
-    const res = await this.usersService.updatePassword(changePasswordDto.password, userId, userLogged);
-    return res;
+    let response = false; 
+    let match = await this.usersService.verifyPassword(userId, changePasswordDto.password);
+    if(match){
+      response = await this.usersService.updatePassword(changePasswordDto.newPassword, userId, userLogged);
+    } else {
+      response = false;
+    }
+    return response;
   }
 
   async validateUser(payload: JwtPayload): Promise<InfoUserDto> {

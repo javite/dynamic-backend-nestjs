@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
 import * as fs from 'fs/promises';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
-
+import { ObjectType } from 'src/enums/object_type.enum';
 @Injectable()
 export class ConfigurationsService {
   constructor(
@@ -27,10 +27,10 @@ export class ConfigurationsService {
     try {
       const previousConfig = await this.findAll();
       const frameworksData = JSON.stringify(updateConfigurationDto);
-      const jsonPretty = JSON.stringify(JSON.parse(frameworksData),null,2); //for prettify
+      const jsonPretty = JSON.stringify(JSON.parse(frameworksData), null, 2); //for prettify
 
       await fs.writeFile(this.path, jsonPretty, 'utf-8');
-      this.auditTrailService.auditLogDifference(4, previousConfig, updateConfigurationDto, user, undefined);
+      this.auditTrailService.auditLogDifference(ObjectType.configuration, previousConfig, updateConfigurationDto, user, undefined);
       return true;
     } catch (error) { 
       console.log(error);

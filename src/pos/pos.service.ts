@@ -12,7 +12,8 @@ import { CreateBatchDto } from './../batches/dto/create-batch.dto';
 import { BatchesService } from 'src/batches/batches.service';
 import { ProductsService } from 'src/products/products.service';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
-
+import { EventType } from 'src/enums/event_type.enum';
+import { ObjectType } from 'src/enums/object_type.enum';
 @Injectable()
 export class PosService {
 
@@ -27,7 +28,6 @@ export class PosService {
   ) {}
 
   async create(createPoDto: CreatePoDto): Promise<PO>{
-    
     const name = createPoDto.name;
     let createBatchDTO = new CreateBatchDto();
     createBatchDTO.name = createPoDto.batch.name;
@@ -73,7 +73,7 @@ export class PosService {
     delete poCreated.products;
     delete poCreated.user;
     if(poCreated){
-      this.auditTrailService.auditLogEvent(1, 0, po.name, user, batch, po);
+      this.auditTrailService.auditLogEvent(EventType.created, ObjectType.PO, po.name, user, batch, po);
     }
     return poCreated;  
   }
@@ -128,7 +128,7 @@ export class PosService {
     const updatedPO = await this.poRepository.findOne(id);
     delete po.batches;
     delete po.products;
-    this.auditTrailService.auditLogDifference(0, po, updatedPO, user, batch);
+    this.auditTrailService.auditLogDifference(ObjectType.PO, po, updatedPO, user, batch);
 
     return updatedPO;
   }
@@ -140,7 +140,7 @@ export class PosService {
     }
     const batchPO = po.batches[0];
     delete po.batches;
-    this.auditTrailService.auditLogEvent(2, 0, po.name, user, batchPO)
+    this.auditTrailService.auditLogEvent(EventType.deleted, ObjectType.PO, po.name, user, batchPO)
 
     return this.poRepository.softDelete(id);
   }
@@ -156,7 +156,7 @@ export class PosService {
     const poUpdated = await this.poRepository.update(po.id, po);
     if(poUpdated){
       if(await this.batchesService.close(po.id, user)){
-        this.auditTrailService.auditLogEvent(4, 0, po.name, user, batchPO);
+        this.auditTrailService.auditLogEvent(EventType.closed, ObjectType.PO, po.name, user, batchPO);
       } else {
         po.state = 1; 
         await this.poRepository.update(po.id, po);
@@ -178,7 +178,7 @@ export class PosService {
     const poUpdated = await this.poRepository.update(po.id, po);
     if(poUpdated){
       if(await this.batchesService.open(po.id, user)){
-        this.auditTrailService.auditLogEvent(3, 0, po.name, user, batch);
+        this.auditTrailService.auditLogEvent(EventType.opened, ObjectType.PO, po.name, user, batch);
       } else {
         po.state = 0; 
         await this.poRepository.update(po.id, po);

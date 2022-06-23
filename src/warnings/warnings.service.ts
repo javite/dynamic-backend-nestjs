@@ -11,6 +11,7 @@ export class WarningsService {
     @InjectRepository(Warning)
     private readonly warningRepository: Repository<Warning>
   ) {}
+  
   async create(createWarningDto: CreateWarningDto) {
     const warningCreated = this.warningRepository.create(createWarningDto);
     const warning = await this.warningRepository.save(warningCreated);

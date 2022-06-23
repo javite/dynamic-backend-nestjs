@@ -1,7 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
 
 export class ChangePasswordDto {
-    previowsPassword?: string;
+    password?: string;
     @IsNotEmpty()
-    password: string;
+    newPassword: string;
 }

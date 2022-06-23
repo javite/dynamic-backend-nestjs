@@ -8,7 +8,8 @@ import { Product } from 'src/database/entities/product.entity';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
-
+import { EventType } from 'src/enums/event_type.enum';
+import { ObjectType } from 'src/enums/object_type.enum';
 @Injectable()
 export class BatchesService {
   constructor(
@@ -38,7 +39,7 @@ export class BatchesService {
     const batchCreated = await this.batchRepository.save(batch);
 
     if(batchCreated){
-      this.auditTrailService.auditLogEvent(1, 2 ,batch.name, createBatchDto.userId, batch, batch);
+      this.auditTrailService.auditLogEvent(EventType.created, ObjectType.batch ,batch.name, createBatchDto.userId, batch, batch);
     }
     return batch;
   }
@@ -65,7 +66,7 @@ export class BatchesService {
     await this.batchRepository.update(id, updateBatchDto);
     const updatedBatch = await this.batchRepository.findOne(id);
 
-    this.auditTrailService.auditLogDifference(2, batch, updatedBatch, user, batch)
+    this.auditTrailService.auditLogDifference(ObjectType.batch, batch, updatedBatch, user, batch)
 
     return updatedBatch;
   }
@@ -75,7 +76,7 @@ export class BatchesService {
     if (!batch) {
       throw new HttpException('Batch not found', HttpStatus.BAD_REQUEST);    
     }
-    this.auditTrailService.auditLogEvent(2, 2, batch.name, user, batch);
+    this.auditTrailService.auditLogEvent(EventType.deleted, ObjectType.batch, batch.name, user, batch);
     return this.batchRepository.softDelete(id);
   }
 
@@ -100,7 +101,7 @@ export class BatchesService {
     
     const batchUpdated = await this.batchRepository.update(batch.id, batch);
     if(batchUpdated){
-      this.auditTrailService.auditLogEvent(4, 2 , batch.name, user, batch);
+      this.auditTrailService.auditLogEvent(EventType.closed, ObjectType.batch, batch.name, user, batch);
     } else {
       batch.state = 1;
       await this.batchRepository.update(batch.id, batch);
@@ -118,7 +119,7 @@ export class BatchesService {
     batch.state = 1;
     const batchUpdated = await this.batchRepository.update(batch.id, batch);
     if(batchUpdated){
-      this.auditTrailService.auditLogEvent(3, 2 , batch.name, user, batch);
+      this.auditTrailService.auditLogEvent(EventType.opened, ObjectType.batch, batch.name, user, batch);
     } else {
       await this.batchRepository.update(batch.id, batch);
       batch.state = 0;
