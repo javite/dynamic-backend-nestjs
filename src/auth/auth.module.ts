@@ -6,15 +6,16 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { jwtConstants } from './constants';
-import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
 import { Batch } from 'src/database/entities/batch.entity';
 import { User } from 'src/database/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { AuditTrailModule } from 'src/audit-trail/audit-trail.module';
+
 @Module({
     imports: [    
-        UsersModule,    
+        UsersModule, 
+        AuditTrailModule,   
         PassportModule.register({
             defaultStrategy: 'jwt',
             property: 'user',
@@ -27,6 +28,7 @@ import { UsersService } from 'src/users/users.service';
         TypeOrmModule.forFeature([User, Batch, AuditTrail])
     ], 
     controllers: [AuthController],  
-    providers: [AuthService, JwtStrategy, AuditTrailService],  
-    exports: [PassportModule, JwtModule],})
+    providers: [AuthService, JwtStrategy],  
+    exports: [PassportModule, JwtModule, AuthService]
+})
 export class AuthModule {}

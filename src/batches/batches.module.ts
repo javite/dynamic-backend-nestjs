@@ -10,10 +10,17 @@ import { AuditTrail } from 'src/database/entities/audit-trail.entity';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 import { User } from 'src/database/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { AuditTrailModule } from 'src/audit-trail/audit-trail.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports:  [TypeOrmModule.forFeature([Unit, Batch, Product, AuditTrail, User])],
+  imports:  [
+    TypeOrmModule.forFeature([Unit, Batch, Product, AuditTrail, User]),
+    AuditTrailModule,
+    UsersModule
+  ],
   controllers: [BatchesController],
-  providers: [BatchesService, AuditTrailService, UsersService]
+  providers: [BatchesService],
+  exports: [BatchesService]
 })
 export class BatchesModule {}

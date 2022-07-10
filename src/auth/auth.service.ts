@@ -16,7 +16,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private auditTrailService: AuditTrailService
+    private readonly auditTrailService: AuditTrailService
   ) {}
 
   async register(userDto: CreateUserDto, userLoggued: any): Promise<RegistrationStatus> {
@@ -33,7 +33,6 @@ export class AuthService {
         message: err,
       };
     }
-
     return status;
   }
 
@@ -41,7 +40,6 @@ export class AuthService {
     const user = await this.usersService.findByLogin(loginUserDto);
     const token = this._createToken(user);
     this.auditTrailService.auditLogEvent(EventType.login, ObjectType.user, undefined , user , undefined);
-
     return {
       user: user,
       ...token,
@@ -51,17 +49,6 @@ export class AuthService {
   async logout(loggedUser): Promise<boolean> {
     this.auditTrailService.auditLogEvent(EventType.logout, ObjectType.user, undefined , loggedUser , undefined);
     return true;
-  }
-
-  async changePassword(changePasswordDto: ChangePasswordDto, userId: string, userLogged: any){
-    let response = false; 
-    let match = await this.usersService.verifyPassword(userId, changePasswordDto.password);
-    if(match){
-      response = await this.usersService.updatePassword(changePasswordDto.newPassword, userId, userLogged);
-    } else {
-      response = false;
-    }
-    return response;
   }
 
   async validateUser(payload: JwtPayload): Promise<InfoUserDto> {
@@ -74,7 +61,6 @@ export class AuthService {
 
   private _createToken({ user }: InfoUserDto): any {
     const expiresIn = process.env.EXPIRESIN;
-
     const _user: JwtPayload = { user };
     const accessToken = this.jwtService.sign(_user);
     return {

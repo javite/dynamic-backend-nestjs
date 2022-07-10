@@ -34,13 +34,6 @@ import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
       const userLogged = req.user;
       return await this.authService.logout(userLogged);
     }
-
-    @UseGuards(AuthGuard('jwt'))
-    @Patch('change-password/:userId')
-    public async changePassword(@Req() req: any, @Body() changePasswordDto: ChangePasswordDto, @Param('userId') userId: string): Promise<boolean> {
-      const userLogged = req.user;
-      return await this.authService.changePassword(changePasswordDto, userId, userLogged);
-    }
   
     @Get('whoami')
     @UseGuards(AuthGuard())

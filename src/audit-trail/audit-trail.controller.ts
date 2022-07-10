@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Request, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Request, HttpException, HttpStatus, forwardRef, Inject } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { AuditTrailService } from './audit-trail.service';
 import { CreateAuditTrailDto } from './dto/create-audit-trail.dto';
@@ -9,7 +9,9 @@ import { Role } from 'src/enums/role.enum';
 export class AuditTrailController {
   constructor(
     private readonly auditTrailService: AuditTrailService,
-    private readonly usersService: UsersService) {}
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService
+    ) {}
 
   @Post()
   create(@Body() createAuditTrailDto: CreateAuditTrailDto) {

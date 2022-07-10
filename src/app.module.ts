@@ -17,6 +17,7 @@ import { WarningsModule } from './warnings/warnings.module';
 import { MachineStateModule } from './machine-state/machine-state.module';
 import { ConfigurationsModule } from './configurations/configurations.module';
 import { APP_GUARD } from '@nestjs/core';
+import { PreviousPasswordsModule } from './previous-passwords/previous-passwords.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -45,7 +46,7 @@ import { APP_GUARD } from '@nestjs/core';
     AuditTrailModule, 
     WarningsModule, 
     MachineStateModule, 
-    ConfigurationsModule],
+    ConfigurationsModule, PreviousPasswordsModule],
   controllers: [AppController],
   providers: [AppService],
 })

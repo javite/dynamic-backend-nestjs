@@ -13,7 +13,7 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
-    private auditTrailService: AuditTrailService
+    private readonly auditTrailService: AuditTrailService
   ) {}
 
   async create(createProductDto: CreateProductDto, user: any): Promise<Product>{

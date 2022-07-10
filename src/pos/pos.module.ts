@@ -12,10 +12,22 @@ import { ProductsService } from 'src/products/products.service';
 import { AuditTrailService } from 'src/audit-trail/audit-trail.service';
 import { AuditTrail } from 'src/database/entities/audit-trail.entity';
 import { UsersService } from 'src/users/users.service';
+import { PreviousPassword } from 'src/database/entities/previous-password.entity';
+import { BatchesModule } from 'src/batches/batches.module';
+import { ProductsModule } from 'src/products/products.module';
+import { AuditTrailModule } from 'src/audit-trail/audit-trail.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports:  [TypeOrmModule.forFeature([PO, User, Product, Batch, Unit, AuditTrail])],
+  imports:  [
+    TypeOrmModule.forFeature([PO, User, Product, Batch, Unit, AuditTrail]),
+    BatchesModule,
+    ProductsModule,
+    AuditTrailModule,
+    UsersModule
+  ],
   controllers: [PosController],
-  providers: [PosService, BatchesService, ProductsService, AuditTrailService, UsersService]
+  providers: [PosService],
+  exports: [PosService]
 })
 export class PosModule {}

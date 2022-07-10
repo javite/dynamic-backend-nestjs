@@ -22,9 +22,9 @@ export class PosService {
     private readonly poRepository: Repository<PO>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private batchesService: BatchesService,
-    private productsService: ProductsService,
-    private auditTrailService: AuditTrailService
+    private readonly batchesService: BatchesService,
+    private readonly productsService: ProductsService,
+    private readonly auditTrailService: AuditTrailService
   ) {}
 
   async create(createPoDto: CreatePoDto): Promise<PO>{
