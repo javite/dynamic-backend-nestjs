@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 
 @Entity()
@@ -16,7 +16,7 @@ export class UsersOptions {
     @Column()
     securePassword: boolean;
 
-    @Column()
+    @Column({nullable: true})
     passwordGenerations: number;
 
     @Column({nullable: true})
