@@ -12,6 +12,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { EventType } from 'src/enums/event_type.enum';
 import { ObjectType } from 'src/enums/object_type.enum';
 import { PreviousPasswordsService } from 'src/previous-passwords/previous-passwords.service';
+import { UsersOptionsService } from 'src/users-options/users-options.service';
 @Injectable()
 export class UsersService {
   constructor(
@@ -19,7 +20,8 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
     @Inject(forwardRef(() => AuditTrailService))
     private readonly auditTrailService: AuditTrailService,
-    private readonly previousPasswordsService: PreviousPasswordsService
+    private readonly previousPasswordsService: PreviousPasswordsService,
+    private readonly usersOptionsService: UsersOptionsService
   ) {}
  
   async create(userDto: CreateUserDto, userLogged: any): Promise<InfoUserDto> {    
@@ -90,6 +92,23 @@ export class UsersService {
     return deletedUser;
   }
 
+  async blockUser(user: string) {
+    let response = false;
+    const userInDB = await this.usersRepository.findOne({where: user});
+    if (!userInDB) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);    
+    }
+    let updateUserDto = new UpdateUserDto;
+    updateUserDto.active = false;
+    await this.usersRepository.update(userInDB.id, updateUserDto);
+    const updatedUser = await this.usersRepository.findOne(userInDB.id);
+    if(updatedUser){
+      this.auditTrailService.auditLogEvent(EventType.blocked, ObjectType.user,'Bloqueado', userInDB, undefined);
+      response = true;
+    }
+    return response;
+  }
+
   async findByLogin({ user, password }: LoginUserDto): Promise<InfoUserDto> {    
     const userInDb = await this.usersRepository.findOne({ where: { user } });
     if (!userInDb) {
@@ -99,14 +118,22 @@ export class UsersService {
     if (!areEqual) {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);    
     }
-    return this.toUserDto(userInDb);  
+    if(!userInDb.active){
+      throw new HttpException('Usuario bloqueado', HttpStatus.CONFLICT);    
+    }
+    if(await this.verifyPasswordTimeout(userInDb.id.toString())){
+      throw new HttpException({userId: userInDb.id}, HttpStatus.PRECONDITION_FAILED); //password expired
+    }
+    return this.toUserDto(userInDb);
+    //return userInDb;
+
   }
   
-  async changePassword(changePasswordDto: ChangePasswordDto, userId: string, userLogged: any){
+  async changePassword(changePasswordDto: ChangePasswordDto, userId: string){
     let response = false; 
     let match = await this.verifyPassword(userId, changePasswordDto.password);
     if(match.areEqual){
-      response = await this.updatePassword(changePasswordDto.newPassword, match.user, userLogged);
+      response = await this.updatePassword(changePasswordDto.newPassword, match.user, changePasswordDto.userLoggedId);
     } else {
       response = false;
     }
@@ -126,7 +153,9 @@ export class UsersService {
     return {areEqual, user: userInDb};  
   }
 
-  async updatePassword(newPassword: string, user: User, userLoggued: any) {
+  async updatePassword(newPassword: string, user: User, userLogged: any) {
+    let _userLogged = {id: 0};
+    _userLogged.id = userLogged ?? user.id;
     const changed = await this.previousPasswordsService.create(user, newPassword);
     if(!changed){
       return false;
@@ -136,10 +165,20 @@ export class UsersService {
     await this.usersRepository.update(user.id, changePasswordDto);
     const updatedUser = await this.usersRepository.findOne(user.id);
     if(updatedUser){
-      this.auditTrailService.auditLogEvent(EventType.modified, ObjectType.user, '*******', userLoggued, undefined, undefined, 'password');
+      this.auditTrailService.auditLogEvent(EventType.modified, ObjectType.user, '*******', _userLogged, undefined, undefined, 'password');
       return true;
     } 
     return false;
+  }
+
+  async verifyPasswordTimeout(userId: string){
+    let expired = false;
+    const options = await this.usersOptionsService.findAll();
+    if(options.passwordDuration > 0){
+      const previousPasswords = await this.previousPasswordsService.findAll(userId, options.passwordGenerations);
+      expired = previousPasswords[0].createdAt.getTime() + (options.passwordDuration * 24 * 60 * 60 * 1000) < Date.now();
+    }
+    return expired;
   }
 
   async findByPayload({ user }: any): Promise<InfoUserDto> {

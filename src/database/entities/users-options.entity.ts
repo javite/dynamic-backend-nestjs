@@ -11,7 +11,7 @@ export class UsersOptions {
     sessionDuration: number;
 
     @Column()
-    loginTimeout: number;
+    passwordDuration: number;
 
     @Column()
     securePassword: boolean;

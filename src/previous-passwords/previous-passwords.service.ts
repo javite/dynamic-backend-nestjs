@@ -1,8 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PreviousPassword } from 'src/database/entities/previous-password.entity';
-import { CreatePreviousPasswordDto } from './dto/create-previous-password.dto';
 import { UpdatePreviousPasswordDto } from './dto/update-previous-password.dto';
 import { User } from 'src/database/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -11,11 +10,12 @@ import { UsersService } from 'src/users/users.service';
 export class PreviousPasswordsService {
   constructor(
     @InjectRepository(PreviousPassword)
-    private readonly prevPassRepository: Repository<PreviousPassword>
+    private readonly prevPassRepository: Repository<PreviousPassword>,
+    @Inject(forwardRef(() => UsersService))
+    private readonly userService: UsersService
   ) {}
 
   async create(user: User, newPassword: string) {
-
     let pass = new PreviousPassword();
     pass.user = user;
     pass.previousPassword = newPassword;
@@ -27,8 +27,9 @@ export class PreviousPasswordsService {
     return false;
   }
 
-  async findAll(userId: string): Promise<PreviousPassword[]> {
-    let prevPass = await this.prevPassRepository.find({where: userId});
+  async findAll(userId: string, take: number): Promise<PreviousPassword[]> {
+    const user = this.userService.findById(+userId);
+    let prevPass = await this.prevPassRepository.find({where:{user}, order: {createdAt: "DESC"}, take});//{where:{batch}, order: {createdAt: "DESC"}, take: number}
     return prevPass;
   }
 

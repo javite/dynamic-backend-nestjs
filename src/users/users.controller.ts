@@ -33,11 +33,14 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Patch('change-password/:userId')
-  public async changePassword(@Req() req: any, @Body() changePasswordDto: ChangePasswordDto, @Param('userId') userId: string): Promise<boolean> {
-    const userLogged = req.user;
-    return await this.usersService.changePassword(changePasswordDto, userId, userLogged);
+  public async changePassword(@Body() changePasswordDto: ChangePasswordDto, @Param('userId') userId: string): Promise<boolean> {
+    return await this.usersService.changePassword(changePasswordDto, userId);
+  }
+
+  @Patch('block')
+  public async blockUser(@Body() user: string): Promise<boolean> {
+    return await this.usersService.blockUser(user);
   }
 
   @UseGuards(AuthGuard('jwt'))

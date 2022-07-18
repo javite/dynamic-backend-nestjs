@@ -13,6 +13,7 @@ import { AuditTrailModule } from 'src/audit-trail/audit-trail.module';
     forwardRef(() => AuditTrailModule)
   ],
   controllers: [UsersOptionsController],
-  providers: [UsersOptionsService]
+  providers: [UsersOptionsService],
+  exports: [UsersOptionsService]
 })
 export class UsersOptionsModule {}

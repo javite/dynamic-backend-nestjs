@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PreviousPasswordsService } from './previous-passwords.service';
 import { CreatePreviousPasswordDto } from './dto/create-previous-password.dto';
 import { UpdatePreviousPasswordDto } from './dto/update-previous-password.dto';
@@ -14,8 +14,8 @@ export class PreviousPasswordsController {
   }
 
   @Get(':id')
-  findAll(@Param('id') id: string) {
-    return this.previousPasswordsService.findAll(id);
+  findAll(@Param('id') id: string, @Query('take') take: number) {
+    return this.previousPasswordsService.findAll(id, take);
   }
 
   // @Get(':id')

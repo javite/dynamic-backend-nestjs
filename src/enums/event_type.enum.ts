@@ -7,5 +7,6 @@ export enum EventType {
   login = 5,
   logout = 6,
   started = 7,
-  ended = 8
+  ended = 8,
+  blocked = 9
 }

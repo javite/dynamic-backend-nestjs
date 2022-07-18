@@ -4,7 +4,7 @@ export class UpdateUsersOptionDto {
     @IsNotEmpty()
     sessionDuration: number;
     @IsNotEmpty()
-    loginTimeout: number;
+    passwordDuration: number;
     @IsNotEmpty()
     securePassword: boolean;
     @IsNotEmpty()
