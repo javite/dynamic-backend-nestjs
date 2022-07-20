@@ -103,7 +103,7 @@ export class UsersService {
     await this.usersRepository.update(userInDB.id, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(userInDB.id);
     if(updatedUser){
-      this.auditTrailService.auditLogEvent(EventType.blocked, ObjectType.user,'Bloqueado', userInDB, undefined);
+      this.auditTrailService.auditLogEvent(EventType.blocked, ObjectType.user,'-', userInDB, undefined);
       response = true;
     }
     return response;
@@ -119,7 +119,7 @@ export class UsersService {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);    
     }
     if(!userInDb.active){
-      throw new HttpException('Usuario bloqueado', HttpStatus.CONFLICT);    
+      throw new HttpException('User blocked', HttpStatus.CONFLICT);    
     }
     if(await this.verifyPasswordTimeout(userInDb.id.toString())){
       throw new HttpException({userId: userInDb.id}, HttpStatus.PRECONDITION_FAILED); //password expired
