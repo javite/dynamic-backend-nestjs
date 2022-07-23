@@ -17,6 +17,8 @@ import { WarningsModule } from './warnings/warnings.module';
 import { MachineStateModule } from './machine-state/machine-state.module';
 import { ConfigurationsModule } from './configurations/configurations.module';
 import { APP_GUARD } from '@nestjs/core';
+import { StatisticsModule } from './statistics/statistics.module';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -45,7 +47,9 @@ import { APP_GUARD } from '@nestjs/core';
     AuditTrailModule, 
     WarningsModule, 
     MachineStateModule, 
-    ConfigurationsModule],
+    ConfigurationsModule, 
+    StatisticsModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
