@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, CreateDateCol
 import * as bcrypt from 'bcrypt';
 import { PO } from "./po.entity";
 import { AuditTrail } from "./audit-trail.entity";
+import { PreviousPassword } from "./previous-password.entity";
 
 @Entity()
 export class User {
@@ -43,8 +44,11 @@ export class User {
     @OneToMany(()=>PO, po => po.user)
     pos: PO[];
 
-    @OneToMany(()=>AuditTrail, auditTrail=>auditTrail.user)
+    @OneToMany(()=>AuditTrail, auditTrail => auditTrail.user)
     auditTrail: AuditTrail[];
+
+    @OneToMany(()=>PreviousPassword, previousPassword => previousPassword.user)
+    previousPassword: PreviousPassword[];
     
     @DeleteDateColumn()
     deletedAt: Date;

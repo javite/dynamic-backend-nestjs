@@ -4,5 +4,6 @@ export enum ObjectType {
   product = 2,
   user = 3,
   configuration = 4,
-  system = 5
+  system = 5,
+  usersOptions = 6
 }

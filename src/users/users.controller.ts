@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpException, HttpStatus, Req } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from 'src/enums/role.enum';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 
 @Controller('users')
@@ -30,6 +31,16 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
+  }
+
+  @Patch('change-password/:userId')
+  public async changePassword(@Body() changePasswordDto: ChangePasswordDto, @Param('userId') userId: string): Promise<boolean> {
+    return await this.usersService.changePassword(changePasswordDto, userId);
+  }
+
+  @Patch('block')
+  public async blockUser(@Body() user: string): Promise<boolean> {
+    return await this.usersService.blockUser(user);
   }
 
   @UseGuards(AuthGuard('jwt'))

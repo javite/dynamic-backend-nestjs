@@ -19,7 +19,7 @@ export class BatchesService {
     private readonly batchRepository: Repository<Batch>,
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
-    private auditTrailService: AuditTrailService
+    private readonly auditTrailService: AuditTrailService
   ) {}
 
   async create(createBatchDto: CreateBatchDto): Promise<Batch>{

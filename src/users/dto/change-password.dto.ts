@@ -4,4 +4,5 @@ export class ChangePasswordDto {
     password?: string;
     @IsNotEmpty()
     newPassword: string;
+    userLoggedId?: string;
 }
