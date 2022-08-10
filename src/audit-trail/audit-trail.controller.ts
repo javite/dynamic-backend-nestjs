@@ -3,6 +3,7 @@ import { UsersService } from 'src/users/users.service';
 import { AuditTrailService } from './audit-trail.service';
 import { CreateAuditTrailDto } from './dto/create-audit-trail.dto';
 import { UpdateAuditTrailDto } from './dto/update-audit-trail.dto';
+import { AuditTrailFilterOptions } from './dto/audit-trail-filter-options.dto';
 import { Role } from 'src/enums/role.enum';
 
 @Controller('audit-trail')
@@ -22,6 +23,12 @@ export class AuditTrailController {
   findAll(@Query() query) {
     return this.auditTrailService.findAll(query.skip, query.take);
   }
+
+  // RUTA DE FILTRADO DE AUDIT TRAIL
+  @Post('filter')
+  filteredFindAll(@Body() filterOptions: AuditTrailFilterOptions, @Query() query) {
+    return this.auditTrailService.filteredFindAll(filterOptions, query.skip, query.take);
+  };
 
   @Get(':id')
   findOne(@Param('id') id: string) {

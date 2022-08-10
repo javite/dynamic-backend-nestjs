@@ -17,8 +17,8 @@ import { WarningsModule } from './warnings/warnings.module';
 import { MachineStateModule } from './machine-state/machine-state.module';
 import { ConfigurationsModule } from './configurations/configurations.module';
 import { APP_GUARD } from '@nestjs/core';
-import { PreviousPasswordsModule } from './previous-passwords/previous-passwords.module';
-import { UsersOptionsModule } from './users-options/users-options.module';
+import { StatisticsModule } from './statistics/statistics.module';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -48,7 +48,8 @@ import { UsersOptionsModule } from './users-options/users-options.module';
     WarningsModule, 
     MachineStateModule, 
     ConfigurationsModule, 
-    PreviousPasswordsModule, UsersOptionsModule],
+    StatisticsModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

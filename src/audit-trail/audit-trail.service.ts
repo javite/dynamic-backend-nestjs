@@ -8,6 +8,7 @@ import {diff} from 'deep-diff';
 
 import { CreateAuditTrailDto } from './dto/create-audit-trail.dto';
 import { UpdateAuditTrailDto } from './dto/update-audit-trail.dto';
+import { AuditTrailFilterOptions } from './dto/audit-trail-filter-options.dto';
 
 @Injectable()
 export class AuditTrailService {
@@ -61,6 +62,46 @@ export class AuditTrailService {
   async findOne(id: number) {
     const log = await this.auditTrailRepository.findOne(id);
     return log;
+  }
+
+  async filteredFindAll(filterOptions: AuditTrailFilterOptions, skip: number = 0, take: number = 10) {
+    let logs = [];
+    if (filterOptions.selected === 'user') {
+      const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .where(`user = '${filterOptions.value}'`)
+      .getMany();
+
+      logs = await this.auditTrailRepository
+      .createQueryBuilder('auditTrail')
+      .leftJoinAndSelect('auditTrail.user', 'user')
+      .orderBy('auditTrail.createdAt', 'DESC')
+      .skip(skip)
+      .take(take)
+      .where( `userId = ${user[0].id}` )
+      .getMany();
+    } 
+    else if ( filterOptions.selected === 'batch' ) {
+      const batch = await this.batchRepository
+      .createQueryBuilder('batch')
+      .where( `batch = ${filterOptions.value}` )
+      .getMany();
+
+      logs = await this.auditTrailRepository
+      .createQueryBuilder('auditTrail')
+      .leftJoinAndSelect('auditTrail.user', 'user')
+      .orderBy('auditTrail.createdAt', 'DESC')
+      .skip(skip)
+      .take(take)
+      .where( `batchId = ${batch[0].id}` )
+      .getMany();
+    }
+
+    const logsC = logs.map(log => {
+      return {...log, user: this.buildUserName(log.user)}
+    });
+    
+    return logsC
   }
 
   update(id: number, updateAuditTrailDto: UpdateAuditTrailDto) {
